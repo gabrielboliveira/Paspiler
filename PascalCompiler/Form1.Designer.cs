@@ -2,6 +2,7 @@
 {
     partial class Form1
     {
+	// Testando commit
         /// <summary>
         /// Required designer variable.
         /// </summary>
