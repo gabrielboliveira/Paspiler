@@ -1,0 +1,5 @@
+D:\Documentos\Desenvolvimento\Projects\PascalCompiler\Examples\Pascal .NET Compiler\pasc\pascallib\bin\Debug\pascallib.dll
+D:\Documentos\Desenvolvimento\Projects\PascalCompiler\Examples\Pascal .NET Compiler\pasc\pascallib\bin\Debug\pascallib.pdb
+D:\Documentos\Desenvolvimento\Projects\PascalCompiler\Examples\Pascal .NET Compiler\pasc\pascallib\obj\x86\Debug\pascallib.csprojResolveAssemblyReference.cache
+D:\Documentos\Desenvolvimento\Projects\PascalCompiler\Examples\Pascal .NET Compiler\pasc\pascallib\obj\x86\Debug\pascallib.dll
+D:\Documentos\Desenvolvimento\Projects\PascalCompiler\Examples\Pascal .NET Compiler\pasc\pascallib\obj\x86\Debug\pascallib.pdb

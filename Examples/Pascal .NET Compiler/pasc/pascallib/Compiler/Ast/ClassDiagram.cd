@@ -1,0 +1,99 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1" MembersFormat="FullSignature">
+  <Comment CommentText="Contains elements that are  changing.">
+    <Position X="8.869" Y="6.501" Height="0.75" Width="1.7" />
+  </Comment>
+  <Class Name="pascallib.Compiler.Ast.FunctionDecl">
+    <Position X="2.75" Y="4.25" Width="3.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Compiler\Ast\FunctionDecl.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="pascallib.Compiler.Ast.Statement" Collapsed="true">
+    <Position X="7" Y="2.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Compiler\Ast\Statement.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="pascallib.Compiler.Ast.FunctionDeclBase">
+    <Position X="1.5" Y="1.25" Width="3.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAABAAQAAAAAAAAAAIAAAAAEAAA=</HashCode>
+      <FileName>Compiler\Ast\FunctionDeclBase.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="pascallib.Compiler.Ast.FunctionParam" Collapsed="true">
+    <Position X="7" Y="1.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAQAAAAAAAAA=</HashCode>
+      <FileName>Compiler\Ast\FunctionParam.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="pascallib.Compiler.Ast.ProcedureDecl" Collapsed="true">
+    <Position X="0.5" Y="4.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Compiler\Ast\ProcedureDecl.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="pascallib.Compiler.Ast.ProgramRoot">
+    <Position X="6.25" Y="6.25" Width="3.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAEAAAAAgAQBAAAAAABCAAAAAAAAAAAAAAAEAAAAA=</HashCode>
+      <FileName>Compiler\Ast\ProgramRoot.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="pascallib.Compiler.Ast.TypeDeclBase" Collapsed="true">
+    <Position X="3.5" Y="6.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAQAAAAAAAAAQAAAAAAAQAAAAEAEAAAAA=</HashCode>
+      <FileName>Compiler\Ast\TypeDeclBase.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="pascallib.Compiler.Ast.RecordDecl" Collapsed="true">
+    <Position X="3.5" Y="7.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Compiler\Ast\RecordDecl.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="pascallib.Compiler.Ast.RecordVariable" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="0.5" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Compiler\Ast\RecordVariable.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="pascallib.Compiler.Ast.SymbolTable" Collapsed="true">
+    <Position X="8.75" Y="2.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Compiler\Ast\SymbolTable.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="pascallib.Compiler.Ast.Variable" Collapsed="true">
+    <Position X="0.5" Y="5.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAQAAAAAAAAA=</HashCode>
+      <FileName>Compiler\Ast\Variable.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Interface Name="pascallib.Compiler.Ast.IAstNode" Collapsed="true">
+    <Position X="7" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAEAAAAA=</HashCode>
+      <FileName>Compiler\Ast\IAstNode.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="pascallib.Compiler.Ast.ITypeMember" Collapsed="true">
+    <Position X="8.75" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Compiler\Ast\ITypeMember.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>
