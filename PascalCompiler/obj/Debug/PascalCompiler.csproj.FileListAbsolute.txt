@@ -1,1 +1,10 @@
 D:\Documentos\Desenvolvimento\Projects\PascalCompiler\PascalCompiler\bin\Debug\PascalCompiler.exe.config
+C:\Users\Amanda\Documents\pascal-compiler\PascalCompiler\bin\Debug\PascalCompiler.exe.config
+C:\Users\Amanda\Documents\pascal-compiler\PascalCompiler\bin\Debug\PascalCompiler.exe
+C:\Users\Amanda\Documents\pascal-compiler\PascalCompiler\bin\Debug\PascalCompiler.pdb
+C:\Users\Amanda\Documents\pascal-compiler\PascalCompiler\obj\Debug\PascalCompiler.csprojResolveAssemblyReference.cache
+C:\Users\Amanda\Documents\pascal-compiler\PascalCompiler\obj\Debug\PascalCompiler.Form1.resources
+C:\Users\Amanda\Documents\pascal-compiler\PascalCompiler\obj\Debug\PascalCompiler.Properties.Resources.resources
+C:\Users\Amanda\Documents\pascal-compiler\PascalCompiler\obj\Debug\PascalCompiler.csproj.GenerateResource.Cache
+C:\Users\Amanda\Documents\pascal-compiler\PascalCompiler\obj\Debug\PascalCompiler.exe
+C:\Users\Amanda\Documents\pascal-compiler\PascalCompiler\obj\Debug\PascalCompiler.pdb
