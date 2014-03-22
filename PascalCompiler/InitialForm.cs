@@ -32,6 +32,7 @@ namespace PascalCompiler
             switch (keyPressed.KeyChar)
             {
                 // Caso o usuário aperte o backspace
+                // Precisa ver se o usuário removeu algum token
                 case '\b':
                     {
                         // Remove o último elemento
