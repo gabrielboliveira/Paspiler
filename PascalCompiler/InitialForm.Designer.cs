@@ -36,6 +36,9 @@
             // 
             // _codeTextBox
             // 
+            this._codeTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this._codeTextBox.Font = new System.Drawing.Font("Consolas", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this._codeTextBox.Location = new System.Drawing.Point(12, 12);
             this._codeTextBox.Name = "_codeTextBox";
@@ -50,6 +53,8 @@
             this.gridViewTokens.AllowUserToAddRows = false;
             this.gridViewTokens.AllowUserToDeleteRows = false;
             this.gridViewTokens.AllowUserToOrderColumns = true;
+            this.gridViewTokens.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.gridViewTokens.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.gridViewTokens.Location = new System.Drawing.Point(586, 13);
             this.gridViewTokens.Name = "gridViewTokens";
