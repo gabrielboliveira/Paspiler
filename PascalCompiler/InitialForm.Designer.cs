@@ -36,6 +36,7 @@
             // 
             // _codeTextBox
             // 
+            this._codeTextBox.AcceptsTab = true;
             this._codeTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
@@ -44,7 +45,8 @@
             this._codeTextBox.Name = "_codeTextBox";
             this._codeTextBox.Size = new System.Drawing.Size(568, 458);
             this._codeTextBox.TabIndex = 1;
-            this._codeTextBox.Text = "";
+            this._codeTextBox.Text = "program teste;\nvar oi:integer;\nbegin\n\toi := 1;\n\tif oi = 1 then\n\tbegin\n\t\toi := 2;\n" +
+    "\tend;\nend.";
             this._codeTextBox.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this._codeTextBox_KeyPress);
             // 
             // gridViewTokens

@@ -19,19 +19,20 @@ namespace PascalCompiler.Model
         /// Caso seja um objeto válido, <see cref="TokenType" /> guarda o valor.
         /// Caso não seja um objeto váido, <see cref="TokenType" /> é NonExistant.
         /// </summary>
-        private Token(string token)
+        private Token(string token, int startIndex)
         {
-            Value = token;
-            TokenType = IsKeyword(token);
+            this.StartIndex = startIndex;
+            this.Value = token;
+            this.TokenType = IsKeyword(token);
             // Caso o token não seja válido, verificar se é número ou identificador válido
-            if (TokenType == Token.TokenTypeEnum.NonExistant)
+            if (this.TokenType == Token.TokenTypeEnum.NonExistant)
             {
                 // Verifica se é um número Inteiro ou Real
-                TokenType = IsNumber(token);
-                if (TokenType == Token.TokenTypeEnum.NonExistant)
+                this.TokenType = IsNumber(token);
+                if (this.TokenType == Token.TokenTypeEnum.NonExistant)
                 {
                     // Verifica se é um identificador válido
-                    TokenType = IsValidIdentifier(token);
+                    this.TokenType = IsValidIdentifier(token);
                 }
             }
         }
@@ -76,16 +77,6 @@ namespace PascalCompiler.Model
             set { startIndex = value; }
         }
 
-        private int endIndex = 0;
-
-        /// <summary>
-        /// Armazena a posição final dentro do código.
-        /// </summary>
-        public int EndIndex
-        {
-            get { return endIndex; }
-            set { endIndex = value; }
-        }
 
         #region Dicionário
         /// <summary>
@@ -132,7 +123,6 @@ namespace PascalCompiler.Model
             { TokenTypeEnum.Sub, "-"},
             { TokenTypeEnum.Multiplier, "*"},
             { TokenTypeEnum.Divisor, "/"},
-            { TokenTypeEnum.EqualsIf, "=="},
             { TokenTypeEnum.Equals, ":="},
             { TokenTypeEnum.Semicolon, ";"},
             { TokenTypeEnum.Colon, ":"},
@@ -153,7 +143,8 @@ namespace PascalCompiler.Model
             { TokenTypeEnum.Hash, "#"},
             { TokenTypeEnum.InitialComment, "(*"},
             { TokenTypeEnum.FinalComment, "*)"},
-            { TokenTypeEnum.LineComment, "//"}
+            { TokenTypeEnum.LineComment, "//"},
+            { TokenTypeEnum.EndPoint, "end." }
         };
         #endregion
 
@@ -203,7 +194,6 @@ namespace PascalCompiler.Model
             Sub,
             Multiplier,
             Divisor,
-            EqualsIf,
             Equals,
             Semicolon,
             Colon,
@@ -225,6 +215,7 @@ namespace PascalCompiler.Model
             InitialComment,
             FinalComment,
             LineComment,
+            EndPoint,
 
             RealNumber,
             IntegerNumber,
@@ -307,9 +298,9 @@ namespace PascalCompiler.Model
         /// </summary>
         /// <param name="token">Token a ser validado.</param>
         /// <returns>Retorna um novo objeto com o Token tratado.</returns>
-        public static Token GetToken(string token)
+        public static Token GetToken(string token, int startIndex)
         {
-            return new Token(token);
+            return new Token(token, startIndex);
         }
     }
 }
