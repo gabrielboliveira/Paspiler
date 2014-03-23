@@ -45,7 +45,6 @@
             this._codeTextBox.Size = new System.Drawing.Size(568, 458);
             this._codeTextBox.TabIndex = 1;
             this._codeTextBox.Text = "";
-            this._codeTextBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this._codeTextBox_KeyDown);
             this._codeTextBox.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this._codeTextBox_KeyPress);
             // 
             // gridViewTokens

@@ -8,10 +8,16 @@ using System.Windows.Forms;
 
 namespace PascalCompiler.Model
 {
+    /// <summary>
+    /// Recebe um token, manda para <see cref="Token"/> fazer a validação, e guarda uma lista de tokens válidos.
+    /// </summary>
     class Parser
     {
         private BindingList<Token> tokens = new BindingList<Token>();
 
+        /// <summary>
+        /// Lista de tokens válidos
+        /// </summary>
         internal BindingList<Token> Tokens
         {
             get { return tokens; }
@@ -20,12 +26,14 @@ namespace PascalCompiler.Model
 
         public Parser() { }
 
-        // Recebe um token e processa
+        /// <summary>
+        /// Recebe um token, envia para <see cref="Token"/> validar e caso seja válido, salva em <see cref="Tokens"/>
+        /// </summary>
+        /// <param name="strToken">Token a ser validado.</param>
         public void ParseToken(string strToken)
         {
             // Manda processar o token
             Token token = Token.GetToken(strToken);
-            int aux;
 
             // Caso o token seja válido, adiciona a lista de tokens válidos e processados
             if (token.TokenType != Token.TokenTypeEnum.NonExistant)

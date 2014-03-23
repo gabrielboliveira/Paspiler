@@ -65,6 +65,28 @@ namespace PascalCompiler.Model
             return Convert.ToString(this.tokenType);
         }
 
+        private int startIndex = 0;
+
+        /// <summary>
+        /// Armazena a posição inicial dentro do código.
+        /// </summary>
+        public int StartIndex
+        {
+            get { return startIndex; }
+            set { startIndex = value; }
+        }
+
+        private int endIndex = 0;
+
+        /// <summary>
+        /// Armazena a posição final dentro do código.
+        /// </summary>
+        public int EndIndex
+        {
+            get { return endIndex; }
+            set { endIndex = value; }
+        }
+
         #region Dicionário
         /// <summary>
         /// Referencia cada palavra reservada em String a seu devido tipo do enumerador <see cref="TokenTypeEnum" />.
@@ -133,10 +155,10 @@ namespace PascalCompiler.Model
         };
         #endregion
 
+        #region Enum Tipo do Token
         /// <summary>
         /// Tipos válidos de tokens.
         /// </summary>
-        #region Enum Tipo do Token
         public enum TokenTypeEnum
         {
             NonExistant,

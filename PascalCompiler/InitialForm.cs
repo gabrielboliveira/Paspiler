@@ -29,6 +29,23 @@ namespace PascalCompiler
             gridViewTokens.DataSource = source;
         }
 
+        /// <summary>
+        /// Processa as teclas pressionadas no form.
+        /// </summary>
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        {
+            switch (keyData)
+            {
+                // F5 executa o parser.
+                case (Keys.F5):
+                    {
+                        ExecutaParser();
+                        return true;
+                    }
+            }
+            return base.ProcessCmdKey(ref msg, keyData);
+        }
+
         private void _codeTextBox_KeyPress(object sender, KeyPressEventArgs keyPressed)
         {
             switch (keyPressed.KeyChar)
@@ -42,16 +59,17 @@ namespace PascalCompiler
                             sb.Length--;
                         break;
                     }
-                // Caso o usuário aperte espaço ou enter (\r), deve mandar verificar o token
-                case ' ':
-                case '\r':
+                case ' ': // espaço
+                case '\r': // enter (carriage return)
                     {
+                        // Caso o usuário aperte espaço ou enter (\r), deve mandar verificar o token
                         parser.ParseToken(sb.ToString());
                         sb.Clear();
                         break;
                     }
                 case ';':
                     {
+                        // Se digitar ponto-e-vírgula, deve-se adicionar o token armazenado e também o ";".
                         parser.ParseToken(sb.ToString());
                         parser.ParseToken(";");
                         sb.Clear();
@@ -59,6 +77,7 @@ namespace PascalCompiler
                     }
                 default:
                     {
+                        // Caso a tecla apertada seja um número, letra, ou pontuação válida, adiciona ao sb para validar o token
                         if (Char.IsLetter(keyPressed.KeyChar) || Char.IsSeparator(keyPressed.KeyChar) || Char.IsPunctuation(keyPressed.KeyChar))
                             sb.Append(keyPressed.KeyChar);
                         break;
@@ -105,10 +124,20 @@ namespace PascalCompiler
             //} // fim else
         } //fim metodo key_press
 
-        private void _codeTextBox_KeyDown(object sender, KeyEventArgs keyPressed)
+        /// <summary>
+        /// Executa o parser no código digitado.
+        /// </summary>
+        private void ExecutaParser()
         {
-            
+            MessageBox.Show("Não Implementado!");
 
+
+            // Pensamentos da madrugada:
+
+            // utilizar Char.IsPunctuation(Char var) no while para verificar se é uma pontuação (, [, {, etc.
+            // eu acho que isso dá certo
+            // usar isso pra ficar mais fácil separar identificadores/números colados, sem espaço entre eles...
         }
+
     }
 }
