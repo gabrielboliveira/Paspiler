@@ -30,7 +30,7 @@ namespace PascalCompiler.Model
                 TokenType = IsNumber(token);
                 if (TokenType == Token.TokenTypeEnum.NonExistant)
                 {
-                    // Verifica se é um número Inteiro ou Real
+                    // Verifica se é um identificador válido
                     TokenType = IsValidIdentifier(token);
                 }
             }
@@ -132,11 +132,13 @@ namespace PascalCompiler.Model
             { TokenTypeEnum.Sub, "-"},
             { TokenTypeEnum.Multiplier, "*"},
             { TokenTypeEnum.Divisor, "/"},
-            { TokenTypeEnum.Equals, "="},
+            { TokenTypeEnum.EqualsIf, "=="},
+            { TokenTypeEnum.Equals, ":="},
             { TokenTypeEnum.Semicolon, ";"},
             { TokenTypeEnum.Colon, ":"},
             { TokenTypeEnum.Comma, ","},
             { TokenTypeEnum.Point, "."},
+            { TokenTypeEnum.Apostrophe, "'"},
             { TokenTypeEnum.LessThan, "<"},
             { TokenTypeEnum.LessThanOrEqual, "<="},
             { TokenTypeEnum.GreaterThan, ">"},
@@ -150,7 +152,7 @@ namespace PascalCompiler.Model
             { TokenTypeEnum.Dollar, "$"},
             { TokenTypeEnum.Hash, "#"},
             { TokenTypeEnum.InitialComment, "(*"},
-            { TokenTypeEnum.FinalComment, "(*"},
+            { TokenTypeEnum.FinalComment, "*)"},
             { TokenTypeEnum.LineComment, "//"}
         };
         #endregion
@@ -201,11 +203,13 @@ namespace PascalCompiler.Model
             Sub,
             Multiplier,
             Divisor,
+            EqualsIf,
             Equals,
             Semicolon,
             Colon,
             Comma,
             Point,
+            Apostrophe,
             LessThan,
             LessThanOrEqual,
             GreaterThan,
@@ -245,7 +249,7 @@ namespace PascalCompiler.Model
             {
                 MessageBox.Show(e.Message);
             }
-            return value;
+                return value;
         }
 
         /// <summary>

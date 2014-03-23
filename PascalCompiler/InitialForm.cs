@@ -48,7 +48,7 @@ namespace PascalCompiler
 
         private void _codeTextBox_KeyPress(object sender, KeyPressEventArgs keyPressed)
         {
-            switch (keyPressed.KeyChar)
+        /*    switch (keyPressed.KeyChar)
             {
                 // Caso o usuário aperte o backspace
                 // Precisa ver se o usuário removeu algum token
@@ -75,14 +75,137 @@ namespace PascalCompiler
                         sb.Clear();
                         break;
                     }
+                case ':':
+                case '(':
+                    {
+                        parser.ParseToken(sb.ToString());
+                        sb.Clear();
+                        sb.Append(keyPressed.KeyChar);
+                        break;
+                    }
+                case '*':
+                    {
+                        try
+                        {
+                            //se nao for comentario, entao salvo só *
+                            if ((sb.ToString().ElementAt((sb.Length - 1))) != '(')
+                            {
+                                parser.ParseToken(sb.ToString());
+                                sb.Clear();
+                                parser.ParseToken(keyPressed.KeyChar.ToString());
+                            }
+                            else
+                            {
+                                parser.ParseToken("(*");
+                                sb.Clear();
+                            }
+                        }
+                        catch (Exception e) { sb.Append(keyPressed.KeyChar); }
+                        break;
+                    }
+                case ')':
+                    {
+                        try
+                        {
+                            //se nao for comentario, entao salvo só *
+                            if ((sb.ToString().ElementAt((sb.Length - 1))) != '*')
+                            {
+                                parser.ParseToken(sb.ToString());
+                                sb.Clear();
+                                parser.ParseToken(keyPressed.KeyChar.ToString());
+                            }
+                            else
+                            {
+                                parser.ParseToken("*)");
+                                sb.Clear();
+                            }
+                        }
+                        catch (Exception e) {
+                            sb.Append(keyPressed.KeyChar); 
+                        }
+                        break; 
+                    }
+                case '[':
+                case ']':
+                case '{':
+                case '}':
+                case '+':
+                case '-':
+                case '/':                
+                case '#':     
+                case ',':
+                    {
+                        parser.ParseToken(sb.ToString());
+                        sb.Clear();
+                        parser.ParseToken(keyPressed.KeyChar.ToString());                        
+                        break;
+                    }
+                case '=':
+                    {
+                        try
+                        {
+                            if ((sb.ToString().ElementAt((sb.Length - 1))) == ':')
+                            {
+                                parser.ParseToken(":=");
+                                sb.Clear();
+                            }else
+                            {
+                                if ((sb.ToString().ElementAt((sb.Length - 1))) == '=')
+                                {
+                                    parser.ParseToken("==");
+                                    sb.Clear();
+                                }
+                                else
+                                {
+                                    //Se não tiver ":" ou "=" é poq é o primeiro "=" adiciono o token que vem antes
+                                    parser.ParseToken(sb.ToString());
+                                    sb.Clear();
+                                    sb.Append(keyPressed.KeyChar);                                    
+                                }                                   
+                            }  
+                            break;
+                        }
+                        catch (Exception e) 
+                        { 
+                            //Se não tiver nada antes do "=" salva só o "="
+                            sb.Append(keyPressed.KeyChar); 
+                        }
+                        break;
+                    }
                 default:
                     {
                         // Caso a tecla apertada seja um número, letra, ou pontuação válida, adiciona ao sb para validar o token
-                        if (Char.IsLetter(keyPressed.KeyChar) || Char.IsSeparator(keyPressed.KeyChar) || Char.IsPunctuation(keyPressed.KeyChar))
-                            sb.Append(keyPressed.KeyChar);
+                        if (Char.IsLetter(keyPressed.KeyChar) || Char.IsSeparator(keyPressed.KeyChar) || Char.IsPunctuation(keyPressed.KeyChar) || Char.IsNumber(keyPressed.KeyChar)) 
+                        {
+                            try
+                            {
+                                //verifico se o caracter anterior é parenteses poq pode ou nao ser um comentario
+                                if ((sb.ToString().ElementAt((sb.Length - 1))) == '(')
+                                {
+                                    parser.ParseToken("(");
+                                    sb.Clear();
+                                    sb.Append(keyPressed.KeyChar);
+                                }
+                                else
+                                {
+                                    if ((sb.ToString().ElementAt((sb.Length - 1))) == ':')
+                                    {
+                                        parser.ParseToken(":");
+                                        sb.Clear();
+                                        sb.Append(keyPressed.KeyChar);
+                                    }
+                                    else
+                                        sb.Append(keyPressed.KeyChar);
+                                }
+                                
+                            }
+                            catch (Exception e) { sb.Append(keyPressed.KeyChar); }
+    
+                        }
+                            
                         break;
                     }
-            }
+            }*/
 
             // Obs: comentei pq mudei a verificação de identificador de lugar
             // Agora está na classe Token
@@ -129,8 +252,170 @@ namespace PascalCompiler
         /// </summary>
         private void ExecutaParser()
         {
-            MessageBox.Show("Não Implementado!");
+            int position =0;
+            char key, apostrofo;
+            apostrofo = Convert.ToChar(39);
+            string codeText = _codeTextBox.Text;
+           
+            do
+            {
+                key = codeText.ElementAt(position);
+                if (key == apostrofo)
+                {
+                    parser.ParseToken(sb.ToString());
+                    sb.Clear();
+                    parser.ParseToken("'");
+                }
+                else
+                {
+                    switch (key)
+                    {
 
+                        case ' ': // espaço
+                        case '\n': // enter (carriage return)
+                            {
+                                // Caso o usuário aperte espaço ou enter (\r), deve mandar verificar o token
+                                parser.ParseToken(sb.ToString());
+                                sb.Clear();
+                                break;
+                            }
+                        case ';':
+                            {
+                                // Se digitar ponto-e-vírgula, deve-se adicionar o token armazenado e também o ";".
+                                parser.ParseToken(sb.ToString());
+                                parser.ParseToken(";");
+                                sb.Clear();
+                                break;
+                            }
+                        case ':':
+                            {
+                                parser.ParseToken(sb.ToString());
+                                sb.Clear();
+                                if ((codeText.ElementAt(position + 1)) == '=')
+                                {
+                                    parser.ParseToken(":=");
+                                    position++;
+                                }
+                                else
+                                {
+                                    parser.ParseToken(":");
+                                }
+                                break;
+                            }
+                        case '(':
+                            {
+                                parser.ParseToken(sb.ToString());
+                                sb.Clear();
+                                if ((codeText.ElementAt(position + 1)) == '*')
+                                {
+                                    parser.ParseToken("(*");
+                                    position++;
+                                }
+                                else
+                                {
+                                    parser.ParseToken("(");
+                                }
+                                break;
+                            }
+                        case '*':
+                            {
+                                parser.ParseToken(sb.ToString());
+                                sb.Clear();
+                                if ((codeText.ElementAt(position + 1)) == ')')
+                                {
+                                    parser.ParseToken("*)");
+                                    position++;
+                                }
+                                else
+                                {
+                                   parser.ParseToken("*");
+                                }
+                                break;
+                            }
+                        case '/':
+                            {
+                                parser.ParseToken(sb.ToString());
+                                sb.Clear();
+                                if ((codeText.ElementAt(position + 1)) == '/')
+                                {
+                                    //ignora toda a linha
+                                    do
+                                    {
+                                        position++;
+                                    } while (codeText.ElementAt(position) != '\n');                           
+                                }
+                                else
+                                {
+                                    parser.ParseToken("/");
+                                }
+                                break;
+                            }
+                        case '<':
+                        case '>': 
+                            {
+                                parser.ParseToken(sb.ToString());
+                                sb.Clear();
+                                if ((codeText.ElementAt(position + 1)) == '=')
+                                {
+                                    parser.ParseToken(key +"=");
+                                    position++;                                  
+                                }
+                                else
+                                {
+                                    parser.ParseToken(key.ToString());
+                                }
+                                break;
+                            }
+                        case ')':
+                        case '[':
+                        case ']':
+                        case '{':
+                        case '}':
+                        case '+':
+                        case '-':
+                        case '#':
+                        case ',':
+                            {
+                                parser.ParseToken(sb.ToString());
+                                sb.Clear();
+                                parser.ParseToken(key.ToString());
+                                break;
+                            }
+                        case '=':
+                            {
+                                parser.ParseToken(sb.ToString());
+                                sb.Clear();
+                                if ((codeText.ElementAt(position + 1)) == '=')
+                                {
+                                    parser.ParseToken("==");
+                                    position++;
+                                }
+                                else
+                                {
+                                    parser.ParseToken("=");
+                                }
+                                break;
+                            }
+                        default:
+                            {
+                                // Caso a tecla apertada seja um número, letra, ou pontuação válida, adiciona ao sb para validar o token
+                                if (Char.IsLetter(key) || Char.IsSeparator(key) || Char.IsPunctuation(key) || Char.IsNumber(key))
+                                {
+                                    sb.Append(key);
+                                    if (position == (codeText.Length-1)) 
+                                    {
+                                        parser.ParseToken(sb.ToString());
+                                        sb.Clear();                    
+                                    }
+
+                                }
+                                break;
+                            }
+                    }
+                }
+                position++;
+            } while (position < codeText.Length);
+                        
 
             // Pensamentos da madrugada:
 
