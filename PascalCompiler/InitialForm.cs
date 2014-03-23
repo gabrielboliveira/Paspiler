@@ -25,6 +25,8 @@ namespace PascalCompiler
             // Teste Classe Token
             //Token tk = Token.GetToken("program");
 
+            var source = new BindingSource(parser.Tokens, null);
+            gridViewTokens.DataSource = source;
         }
 
         private void _codeTextBox_KeyPress(object sender, KeyPressEventArgs keyPressed)

@@ -39,7 +39,7 @@
             this._codeTextBox.Font = new System.Drawing.Font("Consolas", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this._codeTextBox.Location = new System.Drawing.Point(12, 12);
             this._codeTextBox.Name = "_codeTextBox";
-            this._codeTextBox.Size = new System.Drawing.Size(589, 458);
+            this._codeTextBox.Size = new System.Drawing.Size(568, 458);
             this._codeTextBox.TabIndex = 1;
             this._codeTextBox.Text = "";
             this._codeTextBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this._codeTextBox_KeyDown);
@@ -51,10 +51,12 @@
             this.gridViewTokens.AllowUserToDeleteRows = false;
             this.gridViewTokens.AllowUserToOrderColumns = true;
             this.gridViewTokens.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.gridViewTokens.Location = new System.Drawing.Point(608, 13);
+            this.gridViewTokens.Location = new System.Drawing.Point(586, 13);
             this.gridViewTokens.Name = "gridViewTokens";
             this.gridViewTokens.ReadOnly = true;
-            this.gridViewTokens.Size = new System.Drawing.Size(184, 457);
+            this.gridViewTokens.RowHeadersVisible = false;
+            this.gridViewTokens.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
+            this.gridViewTokens.Size = new System.Drawing.Size(206, 457);
             this.gridViewTokens.TabIndex = 2;
             // 
             // InitialForm

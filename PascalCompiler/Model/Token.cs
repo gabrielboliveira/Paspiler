@@ -9,52 +9,38 @@ using System.Windows.Forms;
 
 namespace PascalCompiler.Model
 {
+    /// <summary>
+    /// Reconhece o tipo de token entre Keyword (reservado pascal), Real Number, Integer Number, ou Identifier.
+    /// </summary>
     class Token
     {
+        /// <summary>
+        /// Reconhece o token e salva dentro de seu objeto. 
+        /// Caso seja um objeto válido, <see cref="TokenType" /> guarda o valor.
+        /// Caso não seja um objeto váido, <see cref="TokenType" /> é NonExistant.
+        /// </summary>
         private Token(string token)
         {
-            value = token;
-            tokenType = IsKeyword(token);
+            Value = token;
+            TokenType = IsKeyword(token);
             // Caso o token não seja válido, verificar se é número ou identificador válido
-            if (tokenType == Token.TokenTypeEnum.NonExistant)
+            if (TokenType == Token.TokenTypeEnum.NonExistant)
             {
-                int aux;
-                // Verifica se é um número INTEIRO - precisa arrumar pra Real
-                if (int.TryParse(token, out aux))
+                // Verifica se é um número Inteiro ou Real
+                TokenType = IsNumber(token);
+                if (TokenType == Token.TokenTypeEnum.NonExistant)
                 {
-                    tokenType = TokenTypeEnum.Number;
-                }
-                // Não é número, verificar se é id. válido
-                else
-                {
-                    // Trecho Amanda
-
-                    string verifyChar = "^[a-zA-Z]"; // regular expression that will check if "caractere" is a letter
-                    string verifyCharorNumber = "^[a-zA-Z0-9]"; // regular expression that will check if "caractere" is a letter or a number
-
-                    try
-                    {
-                        if (Regex.IsMatch(token.ElementAt(0).ToString(), verifyChar))
-                        {
-                            MessageBox.Show(token);
-                            // TODO: looks on table of special words. If possibleToken is already there, add it on the hashtable with  
-                            // its type. If is not create a new id for this token
-                        }
-                        else
-                        {
-                            MessageBox.Show("nao é valido: irá gerar um erro");
-                        }
-                    }
-                    catch (Exception erro)
-                    {
-                        MessageBox.Show("caractere inválido: " + erro);
-                    }
+                    // Verifica se é um número Inteiro ou Real
+                    TokenType = IsValidIdentifier(token);
                 }
             }
         }
-
+        
         private string value;
 
+        /// <summary>
+        /// Salva o valor do token identificado.
+        /// </summary>
         public string Value
         {
             get { return this.value; }
@@ -63,6 +49,11 @@ namespace PascalCompiler.Model
 
         private TokenTypeEnum tokenType = TokenTypeEnum.NonExistant;
 
+        /// <summary>
+        /// Identifica qual o tipo do token.
+        /// Caso seja um objeto válido, guarda o valor.
+        /// Caso não seja um objeto váido, é NonExistant.
+        /// </summary>
         public TokenTypeEnum TokenType
         {
             get { return tokenType; }
@@ -75,7 +66,9 @@ namespace PascalCompiler.Model
         }
 
         #region Dicionário
-        // Relaciona cada Enum com sua palavra reservada
+        /// <summary>
+        /// Referencia cada palavra reservada em String a seu devido tipo do enumerador <see cref="TokenTypeEnum" />.
+        /// </summary>
         private static Dictionary<TokenTypeEnum, string> tokenValues = new Dictionary<TokenTypeEnum, string>()
         {
             { TokenTypeEnum.Program , "program" },
@@ -140,6 +133,9 @@ namespace PascalCompiler.Model
         };
         #endregion
 
+        /// <summary>
+        /// Tipos válidos de tokens.
+        /// </summary>
         #region Enum Tipo do Token
         public enum TokenTypeEnum
         {
@@ -204,12 +200,16 @@ namespace PascalCompiler.Model
             FinalComment,
             LineComment,
 
-            Number,
+            RealNumber,
+            IntegerNumber,
+
             Identifier
         }
         #endregion
 
-        // Verifica se um token é uma palavra reservada - keyword
+        /// <summary>
+        /// Verifica se um token é uma palavra reservada do Pascal.
+        /// </summary>
         private static TokenTypeEnum IsKeyword(string token)
         {
             TokenTypeEnum value = TokenTypeEnum.NonExistant;
@@ -226,6 +226,61 @@ namespace PascalCompiler.Model
             return value;
         }
 
+        /// <summary>
+        /// Verifica se o token é um número.
+        /// </summary>
+        private static TokenTypeEnum IsNumber(string token)
+        {
+            TokenTypeEnum value = TokenTypeEnum.NonExistant;
+
+            int aux;
+            float aux2;
+
+            if (int.TryParse(token, out aux))
+            {
+                value = TokenTypeEnum.IntegerNumber;
+            }
+            else if (float.TryParse(token, out aux2))
+            {
+                value = TokenTypeEnum.RealNumber;
+            }
+
+            return value;
+        }
+
+        /// <summary>
+        /// Verifica se o token é um identificador válido.
+        /// </summary>
+        private static TokenTypeEnum IsValidIdentifier(string token)
+        {
+            TokenTypeEnum value = TokenTypeEnum.NonExistant;
+
+            // Trecho Amanda
+
+            string verifyChar = "^[a-zA-Z]"; // regular expression that will check if "caractere" is a letter
+
+            try
+            {
+                if (Regex.IsMatch(token.ElementAt(0).ToString(), verifyChar))
+                {
+                    value = TokenTypeEnum.Identifier;
+                    //MessageBox.Show(token);
+                }
+            }
+            catch (Exception erro)
+            {
+                //MessageBox.Show("caractere inválido: " + erro);
+            }
+
+            return value;
+        }
+
+        /// <summary>
+        /// Identifica um token, comparando com as palavras reservadas e devidas verificações. Caso seja um token,
+        /// é armazenado o seu tipo. Caso não seja um token, seu tipo é NonExistant.
+        /// </summary>
+        /// <param name="token">Token a ser validado.</param>
+        /// <returns>Retorna um novo objeto com o Token tratado.</returns>
         public static Token GetToken(string token)
         {
             return new Token(token);
