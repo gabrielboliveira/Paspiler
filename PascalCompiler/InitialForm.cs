@@ -26,8 +26,11 @@ namespace PascalCompiler
             // Teste Classe Token
             //Token tk = Token.GetToken("program");
 
-            var source = new BindingSource(parser.Tokens, null);
-            gridViewTokens.DataSource = source;
+            var validSource = new BindingSource(parser.ValidTokens, null);
+            gridViewValidTokens.DataSource = validSource;
+
+            var notValidSource = new BindingSource(parser.NotValidTokens, null);
+            gridViewNotValidTokens.DataSource = notValidSource;
         }
 
         /// <summary>
@@ -55,7 +58,7 @@ namespace PascalCompiler
 
                             string[] filelines = File.ReadAllLines(filename);
 
-                            _codeTextBox.Text = string.Join("\n", filelines);
+                            _codeTextBox.Text = string.Join('\n'.ToString(), filelines);
                         }
                         return true;
                     }

@@ -13,15 +13,26 @@ namespace PascalCompiler.Model
     /// </summary>
     class Parser
     {
-        private BindingList<Token> tokens = new BindingList<Token>();
+        private BindingList<Token> validTokens = new BindingList<Token>();
 
         /// <summary>
         /// Lista de tokens válidos
         /// </summary>
-        internal BindingList<Token> Tokens
+        internal BindingList<Token> ValidTokens
         {
-            get { return tokens; }
-            set { tokens = value; }
+            get { return validTokens; }
+            set { validTokens = value; }
+        }
+
+        private BindingList<Token> notValidTokens = new BindingList<Token>();
+
+        /// <summary>
+        /// Lista de tokens inválidos
+        /// </summary>
+        internal BindingList<Token> NotValidTokens
+        {
+            get { return notValidTokens; }
+            set { notValidTokens = value; }
         }
 
         public Parser() { }
@@ -31,11 +42,12 @@ namespace PascalCompiler.Model
         /// </summary>
         public void Clear()
         {
-            tokens.Clear();
+            validTokens.Clear();
+            notValidTokens.Clear();
         }
 
         /// <summary>
-        /// Recebe um token, envia para <see cref="Token"/> validar e caso seja válido, salva em <see cref="Tokens"/>
+        /// Recebe um token, envia para <see cref="Token"/> validar e caso seja válido, salva em <see cref="ValidTokens"/>
         /// </summary>
         /// <param name="strToken">Token a ser validado.</param>
         public void ParseToken(string strToken, int startIndex)
@@ -47,7 +59,12 @@ namespace PascalCompiler.Model
             if (token.TokenType != Token.TokenTypeEnum.NonExistant)
             {
                 // MessageBox.Show(token.ToString());
-                tokens.Add(token);
+                validTokens.Add(token);
+            }
+            // não é válido, adiciona a lista de tokens não válidos
+            else
+            {
+                notValidTokens.Add(token);
             }
         }
     }
