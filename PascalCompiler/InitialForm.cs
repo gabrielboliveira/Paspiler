@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Text.RegularExpressions;
 using PascalCompiler.Model;
+using System.IO;
 
 namespace PascalCompiler
 {
@@ -40,6 +41,22 @@ namespace PascalCompiler
                 case (Keys.F5):
                     {
                         ExecutaParser();
+                        return true;
+                    }
+                case (Keys.F2):
+                    {
+                        OpenFileDialog theDialog = new OpenFileDialog();
+                        theDialog.Title = "Abrir código fonte Pascal";
+                        theDialog.Filter = "Código Fonte Pascal|*.pas";
+                        theDialog.InitialDirectory = @"C:\";
+                        if (theDialog.ShowDialog() == DialogResult.OK)
+                        {
+                            string filename = theDialog.FileName;
+
+                            string[] filelines = File.ReadAllLines(filename);
+
+                            _codeTextBox.Text = string.Join("\n", filelines);
+                        }
                         return true;
                     }
             }
