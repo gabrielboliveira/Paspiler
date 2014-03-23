@@ -254,6 +254,7 @@ namespace PascalCompiler
         {
             int position =0;
             char key, apostrofo;
+            //coloquei em uma variavel poq no case nao tava dando certo
             apostrofo = Convert.ToChar(39);
             string codeText = _codeTextBox.Text;
            
