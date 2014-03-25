@@ -280,6 +280,7 @@ namespace PascalCompiler
             //coloquei em uma variavel poq no case nao tava dando certo
             apostrofo = Convert.ToChar(39);
             string codeText = _codeTextBox.Text;
+            string texto;
            
             do
             {
@@ -289,7 +290,19 @@ namespace PascalCompiler
                     parser.ParseToken(sb.ToString(), startIndex);
                     sb.Clear();
                     startIndex = position;
-                    parser.ParseToken("'", startIndex);
+                    texto = "";
+                    position++;
+                    while (codeText.ElementAt(position).ToString() != "'")
+                    {
+                        //vai concatenando em uma string tudo o que estiver entre os apóstrofos
+                        texto += codeText.ElementAt(position);
+                        position++;
+                        if (position == codeText.Length)
+                            break;
+                       
+                    } 
+                    parser.ParseToken("'"+texto+"'", startIndex);
+                               
                 }
                 else
                 {
@@ -297,6 +310,7 @@ namespace PascalCompiler
                     {
 
                         case ' ': // espaço
+                        
                         case '\n': // enter (carriage return)
                             {
                                 // se for espaço ou enter (\r), deve mandar verificar o token
@@ -342,9 +356,20 @@ namespace PascalCompiler
                                 startIndex = position;
                                 if ((codeText.ElementAt(position + 1)) == '*')
                                 {
-                                    parser.ParseToken("(*", startIndex);
-                                    // pula a posição em seguida, pois já foi verificado
-                                    position++;
+                                    // ignora tudo até encontrar o outro * e ) - comentario nao precisa ser identificado na tabela
+                                    do
+                                    {
+                                        position++;
+                                        
+                                        if (codeText.ElementAt(position) == '*') 
+                                        {
+                                            if (codeText.ElementAt(position + 1) == ')')
+                                            {
+                                                position++;
+                                                break;
+                                            }
+                                        }
+                                    }while (position < (codeText.Length-1));
                                 }
                                 else
                                 {
@@ -419,6 +444,8 @@ namespace PascalCompiler
                         case '#':
                         case ',':
                         case '=':
+                        case '^':
+                        case '@':
                             {
                                 parser.ParseToken(sb.ToString(), startIndex);
                                 sb.Clear();

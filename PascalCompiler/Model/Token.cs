@@ -33,9 +33,15 @@ namespace PascalCompiler.Model
                 {
                     // Verifica se é um identificador válido
                     this.TokenType = IsValidIdentifier(token);
+                    if (this.TokenType == Token.TokenTypeEnum.NonExistant) 
+                    {
+                        //Verifica se é uma string
+                        this.TokenType = IsString(token);
+                    }
                 }
-            }
-        }
+                    
+             }
+        }        
         
         private string value;
 
@@ -168,6 +174,7 @@ namespace PascalCompiler.Model
             Real,
             Character,
             Null,
+            Text,
             Record,
             Array,
             Set,
@@ -291,6 +298,22 @@ namespace PascalCompiler.Model
                 //MessageBox.Show("caractere inválido: " + erro);
             }
 
+            return value;
+        }
+        /// <summary>
+        /// Verifica se o token é uma string.
+        /// </summary>
+        private static TokenTypeEnum IsString(string token) 
+        {
+            TokenTypeEnum value = TokenTypeEnum.NonExistant;
+            try
+            {
+                if (token.ElementAt(0) == Convert.ToChar(39)) 
+                {
+                    value = TokenTypeEnum.Text;
+                }
+            }
+            catch (Exception e) { }
             return value;
         }
 

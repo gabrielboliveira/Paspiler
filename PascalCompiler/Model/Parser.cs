@@ -52,20 +52,23 @@ namespace PascalCompiler.Model
         /// <param name="strToken">Token a ser validado.</param>
         public void ParseToken(string strToken, int startIndex)
         {
-            // Manda processar o token
-            Token token = Token.GetToken(strToken, startIndex);
+            if (strToken != "") 
+            {
+                // Manda processar o token
+                Token token = Token.GetToken(strToken, startIndex);
 
-            // Caso o token seja válido, adiciona a lista de tokens válidos e processados
-            if (token.TokenType != Token.TokenTypeEnum.NonExistant)
-            {
-                // MessageBox.Show(token.ToString());
-                validTokens.Add(token);
-            }
-            // não é válido, adiciona a lista de tokens não válidos
-            else
-            {
-                notValidTokens.Add(token);
-            }
+                // Caso o token seja válido, adiciona a lista de tokens válidos e processados
+                if (token.TokenType != Token.TokenTypeEnum.NonExistant)
+                {
+                    // MessageBox.Show(token.ToString());
+                    validTokens.Add(token);
+                }
+                // não é válido, adiciona a lista de tokens não válidos
+                else
+                {
+                    notValidTokens.Add(token);
+                }    
+            }            
         }
     }
 }
