@@ -19,6 +19,8 @@ namespace PascalCompiler
 
         Parser parser = new Parser();
 
+        string initialDirectory = @"C:\";
+
         public InitialForm()
         {
             InitializeComponent();
@@ -51,10 +53,12 @@ namespace PascalCompiler
                         OpenFileDialog theDialog = new OpenFileDialog();
                         theDialog.Title = "Abrir código fonte Pascal";
                         theDialog.Filter = "Código Fonte Pascal|*.pas";
-                        theDialog.InitialDirectory = @"C:\";
+                        theDialog.InitialDirectory = initialDirectory;
                         if (theDialog.ShowDialog() == DialogResult.OK)
                         {
                             string filename = theDialog.FileName;
+
+                            initialDirectory = Path.GetDirectoryName(filename);
 
                             string[] filelines = File.ReadAllLines(filename);
 
