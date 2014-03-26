@@ -446,6 +446,7 @@ namespace PascalCompiler
                         case '=':
                         case '^':
                         case '@':
+                        case '.':
                             {
                                 parser.ParseToken(sb.ToString(), startIndex);
                                 sb.Clear();
