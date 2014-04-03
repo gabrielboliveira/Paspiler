@@ -23,20 +23,20 @@ namespace PascalCompiler.Model
         {
             this.StartIndex = startIndex;
             this.Value = token;
-            this.TokenType = IsKeyword(token);
-            // Caso o token não seja válido, verificar se é número ou identificador válido
+            // Verifica se é um número
+            this.TokenType = IsNumber(token);
             if (this.TokenType == Token.TokenTypeEnum.NonExistant)
             {
-                // Verifica se é um número Inteiro ou Real
-                this.TokenType = IsNumber(token);
+                // Verifica se é uma string válida
+                this.TokenType = IsString(token);
                 if (this.TokenType == Token.TokenTypeEnum.NonExistant)
                 {
-                    // Verifica se é um identificador válido
-                    this.TokenType = IsValidIdentifier(token);
+                    // Verifica se é uma palavra reservada do Pascal
+                    this.TokenType = IsKeyword(token);
                     if (this.TokenType == Token.TokenTypeEnum.NonExistant) 
                     {
-                        //Verifica se é uma string
-                        this.TokenType = IsString(token);
+                        //Verifica se é um identificador válido
+                        this.TokenType = IsValidIdentifier(token);
                     }
                 }
                     
