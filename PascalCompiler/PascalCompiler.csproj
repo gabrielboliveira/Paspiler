@@ -51,6 +51,7 @@
       <DependentUpon>InitialForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Model\Parser.cs" />
+    <Compile Include="Model\Sintatico.cs" />
     <Compile Include="Model\Token.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -494,13 +494,22 @@ namespace PascalCompiler
                 }
                 position++;
             } while (position < codeText.Length);
-                        
 
+            AnalisadorSintatico();
             // Pensamentos da madrugada:
 
             // utilizar Char.IsPunctuation(Char var) no while para verificar se é uma pontuação (, [, {, etc.
             // eu acho que isso dá certo
             // usar isso pra ficar mais fácil separar identificadores/números colados, sem espaço entre eles...
+        }
+
+        private void AnalisadorSintatico()
+        {
+            int i = 0;
+
+            
+            MessageBox.Show(parser.ValidTokens.ElementAt(1).TokenType.ToString());
+            
         }
 
     }

@@ -62,6 +62,7 @@ namespace PascalCompiler.Model
                 {
                     // MessageBox.Show(token.ToString());
                     validTokens.Add(token);
+                    
                 }
                 // não é válido, adiciona a lista de tokens não válidos
                 else
