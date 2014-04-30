@@ -35,9 +35,7 @@ namespace PascalCompiler.Model
                 else
                     erro();
             }
-        }
-
-        
+        }        
         private void sitype() 
         {
             if (tokentype == "Tyiden")
@@ -81,9 +79,229 @@ namespace PascalCompiler.Model
             }
 
         }
+        private void type()
+        {
+            PegaProximo();
+            if (tokentype == "TYIDEN")
+            {
+                return;
+            }
+            if ((tokentype == "packed")||(tokentype == "array")||(tokentype == "file")||(tokentype == "set")||(tokentype == "record"))
+            {
+                if (tokentype == "packed")
+                {
+                    PegaProximo();
+                    if ((tokentype == "array") || (tokentype == "file") || (tokentype == "set") || (tokentype == "record"))
+                    {
+                        PegaProximo();
+                    }
+                    else
+                        sitype();
+                }
+                else
+                {
+                    if (tokentype == "array")
+                    {
+                        PegaProximo();
+                        if (tokentype == "[")
+                        {
+                            bool volta = true;
+                            while (volta)
+                            {
+                                sitype();
+                                PegaProximo();
+                                if (tokentype == ",")
+                                    PegaProximo();
+                                else
+                                    if (tokentype == "]")
+                                    {
+                                        volta = false;
+                                        PegaProximo();
+                                        if (tokentype == "of")
+                                        {
+                                            type();
+                                            return;
+                                        }
+                                        else
+                                            erro();
+                                    }
+                                    else
+                                        erro();
+                            }
+
+                        }
+                    }
+                    else 
+                        if (tokentype == "file")
+                        {
+                            PegaProximo();
+                            if (tokentype == "of")
+                            {
+                                type();
+                                return;
+                            }
+                            else
+                                erro();
+                        }
+                        else
+                            if (tokentype == "set")
+                            {
+                                PegaProximo();
+                                if (tokentype == "of")
+                                {
+                                    sitype();
+                                    return;
+                                }
+                                else
+                                    erro();
+                            }
+                            else
+                                if (tokentype == "record")
+                                {
+                                    filist();
+                                    PegaProximo();
+                                    if (tokentype == "end")
+                                        return;
+                                    else
+                                        erro();
+                                }
+                }
+                
+            }
+        }
+        private void filist()
+        {
+            bool volta, voltainicio;
+            volta = true;
+            voltainicio = true;
+            while (voltainicio)
+            {
+                while (volta)
+                {
+                    if (tokentype == "IDEN")
+                    {
+                        PegaProximo();
+                        if (tokentype == ",")
+                            PegaProximo();
+                        if (tokentype == ":")
+                        {
+                            volta = false;
+                            PegaProximo();
+                        }
+                    }
+                    else
+                        if (tokentype == ";")
+                            PegaProximo();
+                        else
+                            if (tokentype == "case")
+                            {
+                                voltainicio = false;
+                                PegaProximo();
+                                casefilist();
+                            }                             
+                }
+                    type();
+                    PegaProximo();
+                    if (tokentype == ";")
+                        PegaProximo();
+                    if (tokentype == "case")
+                    {
+                        voltainicio = false;
+                        PegaProximo();
+                        casefilist();
+                    }
+                    else 
+                    {
+                        //Verifica este em outras estruturas
+                    }                
+            }
+        }
+        private void casefilist()
+        {
+            bool volta = true;
+            while (volta)
+            {
+                if ((tokentype == "String") || (tokentype == "COIDEN") || (tokentype == "NUMB")||(tokentype == "+")||(tokentype == "-"))
+                {
+                    PegaProximo();
+                    if ((tokentype == "+") || (tokentype == "-"))
+                    {
+                        if ((tokentype != "COIDEN") && (tokentype != "NUMB"))
+                            erro();
+                        else
+                            PegaProximo();
+                    }                                       
+                    if (tokentype == ",")
+                        PegaProximo();
+                    if (tokentype == ":")
+                    {
+                        PegaProximo();
+                        if (tokentype == "(")
+                        {
+                            PegaProximo();
+                            filist();
+                            PegaProximo();
+                            if (tokentype == ")")
+                            {
+                                if (tokentype == ";")
+                                    PegaProximo();
+                                else
+                                {
+                                    volta = false;
+                                    //Testar esse com outro if
+                                }
+                            }
+
+                        }
+                    }
+                }
+               else
+                {
+                    if (tokentype == ";")
+                        PegaProximo();
+                    else
+                        volta = false;
+                        //testar esse com outro if
+                 }
+                        
+            }
+
+        }
+        private void infipo()
+        {
+            bool volta, voltainicio;
+            volta = true;
+            voltainicio = true;
+            PegaProximo();
+            while (voltainicio)
+            {
+                if (tokentype == "[")
+                {
+                    while (volta)
+                    {
+                        expr();
+                        if (tokentype == ",")
+                            PegaProximo();
+                        else
+                            if (tokentype == "]")
+                            {
+                                volta = false;
+                                PegaProximo();
+                            } 
+                    }                    
+                }
+                else
+                    if (tokentype == ".")
+                    { }
+                    else
+                        return;
+            }           
+        }
+        private void factor()
+        { }
         private void term()
         {
-            fator();
+            factor();
             PegaProximo();
             if ((tokentype == "*") || (tokentype == "/") || (tokentype == "div") || (tokentype == "mod") || (tokentype == "and"))
                 term();
@@ -119,6 +337,12 @@ namespace PascalCompiler.Model
                 //TODO: TESTAR SE É LAMBDA SENAO
                 erro();
         }
+        private void palist()
+        {
+ 
+        }
+        private void block()
+        { }
         private void statm()
         {
             PegaProximo();
@@ -151,26 +375,42 @@ namespace PascalCompiler.Model
                     {
                         if (tokentype == "PRIDEN")
                         {
+                            bool volta = false;
                             if (tokentype == "(")
                             {
-                            Priden: PegaProximo();
-                                if (tokentype == "PRIDEN")
+                                PegaProximo();
+                                while (volta)
                                 {
-                                Volta: PegaProximo();
-                                    if (tokentype == ")")
-                                        return;
+                                    if (tokentype == "PRIDEN")
+                                    {
+                                        PegaProximo();
+                                        if (tokentype == ")")
+                                        {
+                                            volta = false;
+                                            return;
+                                        }
+                                        else
+                                        {
+                                            if (tokentype == ",")
+                                                PegaProximo();
+                                        }
+                                    }
                                     else
                                     {
-                                        if (tokentype == ",")
-                                            goto Priden;
-                                    }
+                                        expr();
+                                        PegaProximo();
+                                        if (tokentype == ")")
+                                        {
+                                            volta = false;
+                                            return;
+                                        }
+                                        else
+                                        {
+                                            if (tokentype == ",")
+                                                PegaProximo();
+                                        }                                       
+                                    } 
                                 }
-                                else
-                                {
-                                    expr();
-                                    goto Volta;
-                                }
-
                             }
                             else
                                 //TODO:  VERIFICAR SE É LAMBIDA SENAO 
@@ -257,5 +497,44 @@ namespace PascalCompiler.Model
 
  
         }
+        private void progrm()
+        {
+            PegaProximo();
+            if (tokentype == "IDEN")
+            {
+                bool volta = true;
+                PegaProximo();
+                if (tokentype == "(")
+                    while (volta)
+                    {
+                        PegaProximo();
+                        if (tokentype == "IDEN")
+                        {
+                            PegaProximo();
+                            if (tokentype == ",")
+                                PegaProximo();
+                            else
+                                if (tokentype == ")")
+                                {
+                                    volta = false;
+                                    PegaProximo();
+                                    if (tokentype == ";")
+                                    {
+                                        block();
+                                        PegaProximo();
+                                        if (tokentype == ".")
+                                            return;
+                                        else
+                                            erro();
+                                    }
+                                    else
+                                        erro();
+                                }
+                        }
+
+                    }
+            }
+        }
+
     }
 }
