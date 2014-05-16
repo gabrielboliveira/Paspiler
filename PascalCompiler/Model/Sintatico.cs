@@ -9,6 +9,8 @@ namespace PascalCompiler.Model
     class Sintatico
     {
         string tokentype = "";
+        //REGRAS DOS MÉTODOS: Antes de retornar de um método eu pego o próximo, logo, não se pega o próximo no começo de nenhum método
+        //Só nao pego o próximo no final do método se o último comando for outro método
         private void PegaProximo()
         {
            //Pegar tipo do proximo token
@@ -195,53 +197,10 @@ namespace PascalCompiler.Model
 }
         private void filist()
         {
-            bool volta, voltainicio;
-            volta = true;
-            voltainicio = true;
-            while (voltainicio)
-            {
-                while (volta)
-                {
-                    if (tokentype == "IDEN")
-                    {
-                        PegaProximo();
-                        if (tokentype == ",")
-                            PegaProximo();
-                        if (tokentype == ":")
-                        {
-                            volta = false;
-                            PegaProximo();
-                        }
-                    }
-                    else
-                        if (tokentype == ";")
-                            PegaProximo();
-                        else
-                            if (tokentype == "case")
-                            {
-                                voltainicio = false;
-                                PegaProximo();
-                                casefilist();
-                            }                             
-                }
-                    type();
-                    PegaProximo();
-                    if (tokentype == ";")
-                        PegaProximo();
-                    if (tokentype == "case")
-                    {
-                        voltainicio = false;
-                        PegaProximo();
-                        casefilist();
-                    }
-                    else 
-                    {
-                        //Verifica este em outras estruturas
-                    }                
-            }
+            //O livro está com manchas.. não consegui ver o q eram alguns símbolos
         }
         private void casefilist()
-        {
+        {//como nao tem referências a esse metodo ainda nao conferi
             bool volta = true;
             while (volta)
             {
@@ -251,7 +210,7 @@ namespace PascalCompiler.Model
                     if ((tokentype == "+") || (tokentype == "-"))
                     {
                         if ((tokentype != "COIDEN") && (tokentype != "NUMB"))
-                            erro();
+                            erro("erro");
                         else
                             PegaProximo();
                     }                                       
@@ -292,17 +251,19 @@ namespace PascalCompiler.Model
 
         }
         private void infipo()
-        {
+        {//ok
             bool volta, voltainicio;
-            volta = true;
+            
             voltainicio = true;
             PegaProximo();
             while (voltainicio)
             {
                 if (tokentype == "[")
                 {
+                    volta = true;
                     while (volta)
                     {
+                        PegaProximo();
                         expr();
                         if (tokentype == ",")
                             PegaProximo();
@@ -311,62 +272,212 @@ namespace PascalCompiler.Model
                             {
                                 volta = false;
                                 PegaProximo();
-                            } 
+                            }
+                            else
+                            {
+                                volta = false;                                
+                                erro("Esperava ] obteve " + tokentype);
+                            }
                     }                    
                 }
                 else
                     if (tokentype == ".")
-                    { }
+                    {
+                        PegaProximo();
+                        if (tokentype == "FIIDEN")
+                            PegaProximo();
+                    }
                     else
+                    {
+                        voltainicio = false;
                         return;
+                    }
             }           
         }
         private void factor()
-        { }
-        private void term()
-        {
-            factor();
-            PegaProximo();
-            if ((tokentype == "*") || (tokentype == "/") || (tokentype == "div") || (tokentype == "mod") || (tokentype == "and"))
-                term();
-            else
-                //TODO: TESTAR SE É LAMBDA SENAO
-                erro();
-        }      
-        private void siexpr()
-        {
-            PegaProximo();
-            if ((tokentype == "+") || (tokentype == "-"))
+        {//ok
+            if ((tokentype == "COIDEN")||(tokentype == "NUMB")||(tokentype == "nil")||(tokentype == "STRING"))
             {
-            Termo:
-                term();
                 PegaProximo();
-                if ((tokentype == "+") || (tokentype == "-") || (tokentype == "or"))
-                    goto Termo;
-                else
-                    //TODO: TESTAR SE É LAMBDA SENAO
-                    erro();
+                return;
             }
             else
-                erro();
+                if (tokentype == "VAIDEN")
+                {
+                    PegaProximo();
+                    infipo();
+                    return;
+                }else
+                    if (tokentype == "FUIDEN")
+                    {
+                        PegaProximo();
+                        if (tokentype == "(")
+                        {
+                            bool volta = true;
+                            PegaProximo();
+                            while (volta)
+                            {
+                                expr();
+                                if (tokentype == ",")
+                                    PegaProximo();
+                                else
+                                    if (tokentype == ")")
+                                    {
+                                        volta = false;
+                                        PegaProximo();
+                                        return;
+                                    }
+                                    else
+                                    {
+                                        volta = false;
+                                        erro("Esperava ) obteve " + tokentype);
+                                    }
+                            }
+                        }
+                        else
+                            return;
+                    }else
+                        if (tokentype == "(")
+                        {
+                            PegaProximo();
+                            expr();
+                            if (tokentype == ")")
+                            {
+                                PegaProximo();
+                                return;
+                            }
+                            else
+                            {
+                                erro("Esperava ) obteve "+tokentype);
+                            }                               
+                        }
+                        else
+                            if (tokentype == "not")
+                            {
+                                PegaProximo();
+                                factor();
+                                return;
+                            }else
+                                if (tokentype == "[")
+                                {
+                                    PegaProximo();
+                                    if (tokentype == "]")
+                                    {
+                                        PegaProximo();
+                                        return;
+                                    }
+                                    else
+                                    {
+                                        bool volta = true;
+                                        PegaProximo();
+                                        while (volta)
+                                        {
+                                            expr();
+                                            if (tokentype == "..")
+                                            {
+                                                PegaProximo();
+                                                expr();
+                                                if (tokentype == ",")
+                                                    PegaProximo();
+                                                else
+                                                    if (tokentype == "]")
+                                                    {
+                                                        volta = false;
+                                                        PegaProximo();
+                                                        return;
+                                                    }
+                                                    else
+                                                    {
+                                                        volta = false;
+                                                        erro("Esperava ] obteve " + tokentype);
+
+                                                    }
+                                            }
+                                            else
+                                            {
+                                                if (tokentype == ",")
+                                                    PegaProximo();
+                                                else
+                                                    if (tokentype == "]")
+                                                    {
+                                                        volta = false;
+                                                        PegaProximo();
+                                                        return;
+                                                    }
+                                                    else
+                                                    {
+                                                        volta = false;
+                                                        erro("Esperava ] obteve " + tokentype);
+
+                                                    }
+                                            }
+                                        }
+                                    }
+                                }                
+        }
+        private void term()
+        {//ok
+            bool volta = true;
+            PegaProximo();
+            while (volta)
+            {
+                factor();
+                if ((tokentype == "*") || (tokentype == "/") || (tokentype == "div") || (tokentype == "mod") || (tokentype == "and"))
+                    PegaProximo();
+                else
+                {
+                    volta = false;
+                    return;
+                }
+                   
+            }            
+        }      
+        private void siexpr()
+        {//ok
+            if ((tokentype == "+") || (tokentype == "-"))
+            {
+                bool volta = true;
+                PegaProximo();
+                while (volta)
+                {
+                    term();
+                    if ((tokentype == "+") || (tokentype == "-") || (tokentype == "or"))
+                    {
+                        PegaProximo();
+                    }
+                    else 
+                    {
+                        volta = false;
+                        return;
+                    }                       
+                }              
+            }
+            else
+                erro("Esperava + ou - obteve "+tokentype);
 
         }
         private void expr()
-        {
-            siexpr();
+        {//ok
             PegaProximo();
+            siexpr();
             if ((tokentype == "=") || (tokentype == "<") || (tokentype == ">") || (tokentype == "<>") || (tokentype == ">=") || (tokentype == "<=") || (tokentype == "in"))
+            {
+                PegaProximo();
                 siexpr();
+                return;
+            }
             else
-                //TODO: TESTAR SE É LAMBDA SENAO
-                erro();
+            {
+                return; 
+            }
+               
         }
         private void palist()
-        {
+        {//nao conferi pois nao tinha referencias
  
         }
         private void block()
-        {// falta proc e func
+        {// ok - não será preciso implementar por enquanto proc e func
             bool volta;
             if (tokentype == "label")
             {
@@ -572,7 +683,7 @@ namespace PascalCompiler.Model
 
         }
         private void statm()
-        {
+        {//ok
            
             if (tokentype == "NUMB")
             {
@@ -792,29 +903,131 @@ namespace PascalCompiler.Model
                                     else
                                     {
                                         if (tokentype == "while")
-                                        { }
+                                        {
+                                            PegaProximo();
+                                            expr();
+                                            if (tokentype == "do")
+                                            {
+                                                PegaProximo();
+                                                statm();
+                                                return;
+                                            }
+                                            else
+                                                erro("Esperava do obteve " + tokentype);
+                                        }
                                         else
                                         {
                                             if (tokentype == "repeat")
-                                            { }
+                                            {
+                                                bool volta = true;
+                                                while (volta)
+                                                {
+                                                    PegaProximo();
+                                                    statm();
+                                                    if (tokentype == ";")
+                                                        PegaProximo();
+                                                    else
+                                                    {
+                                                        if (tokentype == "until")
+                                                        {
+                                                            volta = false;
+                                                            PegaProximo();
+                                                            expr();
+                                                            return;
+                                                        }
+                                                        else 
+                                                        {
+                                                            volta = false;
+                                                            erro("Esperava until obteve " + tokentype);
+                                                        }
+                                                    }
+                                                }
+                                            }
                                             else
                                             {
                                                 if (tokentype == "for")
-                                                { }
+                                                {
+                                                    PegaProximo();
+                                                    if (tokentype == "VAIDEN")
+                                                    {
+                                                        PegaProximo();
+                                                        infipo();
+                                                        if (tokentype == ":=")
+                                                        {
+                                                            PegaProximo();
+                                                            expr();
+                                                            if ((tokentype == "to") || (tokentype == "downto"))
+                                                            {
+                                                                PegaProximo();
+                                                                expr();
+                                                                if (tokentype == "do")
+                                                                {
+                                                                    PegaProximo();
+                                                                    statm();
+                                                                    return;
+                                                                }
+                                                                else
+                                                                    erro("Esperava do obteve " + tokentype);
+                                                            }
+                                                            else
+                                                                erro("Esperava tokentype ou downto obteve " + tokentype);
+                                                        }
+                                                        else
+                                                            erro("Esperava := obteve " + tokentype);
+                                                    }
+                                                    else
+                                                        erro("Esperava VARIDEN obteve " + tokentype);
+                                                }
                                                 else
                                                 {
                                                     if (tokentype == "with")
-                                                    { }
+                                                    {
+                                                        bool volta = true;
+                                                        PegaProximo();
+                                                        while (volta)
+                                                        {
+                                                            if (tokentype == "VAIDEN")
+                                                            {
+                                                                PegaProximo();
+                                                                infipo();
+                                                                if (tokentype == ",")
+                                                                    PegaProximo();
+                                                                else
+                                                                {
+                                                                    if (tokentype == "do")
+                                                                    {
+                                                                        PegaProximo();
+                                                                        statm();
+                                                                        return;
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        volta = false;
+                                                                        erro("Esperava do obteve " + tokentype);
+                                                                    }
+                                                                        
+                                                                }
+                                                            }
+                                                            else
+                                                                erro("Esperava VAIDEN obteve " + tokentype);
+                                                        }
+                                                       
+                                                    }
                                                     else
                                                     {
                                                         if (tokentype == "goto")
                                                         {
                                                             PegaProximo();
                                                             if (tokentype == "NUMB")
+                                                            {
+                                                                PegaProximo();
                                                                 return;
+                                                            }
                                                             else
-                                                                erro();
+                                                                erro("Esperava número obteve " + tokentype);
                                                         }
+                                                        else
+                                                            erro("statm inválido " + tokentype);
                                                     }
                                                 }
                                             }
@@ -832,7 +1045,7 @@ namespace PascalCompiler.Model
  
         }
         private void progrm()
-        {
+        {//ok
             
             if (tokentype == "program")
             {
@@ -853,6 +1066,7 @@ namespace PascalCompiler.Model
                                 if (tokentype == ",")
                                     PegaProximo();
                                 else
+                                {
                                     if (tokentype == ")")
                                     {
                                         volta = false;
@@ -862,21 +1076,38 @@ namespace PascalCompiler.Model
                                             PegaProximo();
                                             block();
                                             if (tokentype == ".")
+                                            {
+                                                PegaProximo();
                                                 return;
+                                            }
                                             else
+                                            {
+                                                volta = false;
                                                 erro("Esperou . obteve " + tokentype);
+                                            }
                                         }
                                         else
+                                        {
+                                            volta = false;
                                             erro("Esperou ; obteve " + tokentype);
+                                        }
                                     }
                                     else
+                                    {
+                                        volta = false;
                                         erro("Esperou ) obteve " + tokentype);
+                                    }
+                                }
                             }
                         }
- 
+
                     }
-                        
+                    else
+                        erro("Esperou ( obteve " + tokentype);
+
                 }
+                else
+                    erro("Esperava identificador obteve " + tokentype);
  
             }
            
