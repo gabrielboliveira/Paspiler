@@ -49,7 +49,6 @@
             this._codeTextBox.TabIndex = 1;
             this._codeTextBox.Text = "program teste;\nvar oi:integer;\nbegin\n\toi := 1;\n\tif oi = 1 then\n\tbegin\n\t\toi := 2;\n" +
     "\tend;\nend.";
-            this._codeTextBox.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this._codeTextBox_KeyPress);
             // 
             // gridViewValidTokens
             // 

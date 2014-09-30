@@ -93,6 +93,7 @@ namespace PascalCompiler.Model
             { TokenTypeEnum.Program , "program" },
             { TokenTypeEnum.User,"user" },
             { TokenTypeEnum.Type, "type" },
+
             { TokenTypeEnum.Var,"var" },
             { TokenTypeEnum.Begin,"begin" },
             { TokenTypeEnum.End,"end" },

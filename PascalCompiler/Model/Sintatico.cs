@@ -9,16 +9,29 @@ namespace PascalCompiler.Model
     class Sintatico
     {
         string tokentype = "";
+
+        private Token tokenAtual = null;
+
+        private List<Token> allTokens = null;
+
+        public void Iniciar()
+        {
+            this.PegaProximo();
+            this.Program();
+        }
+
         //REGRAS DOS MÉTODOS: Antes de retornar de um método eu pego o próximo, logo, não se pega o próximo no começo de nenhum método
         //Só nao pego o próximo no final do método se o último comando for outro método
         private void PegaProximo()
         {
            //Pegar tipo do proximo token
         }
+
         private void erro(String erro)
         {
            //Ver a linha do erro e o motivo
         }
+
         private void constant()
         {//ok
             if (tokentype == "STRING")
@@ -26,27 +39,24 @@ namespace PascalCompiler.Model
                 PegaProximo();
                 return;
             }
-            else
+            if ((tokentype == "+") || (tokentype == "-"))
             {
-                if ((tokentype == "+") || (tokentype == "-"))
+                if ((tokentype == "COIDEN") || (tokentype == "NUMB"))
                 {
-                    if ((tokentype == "COIDEN") || (tokentype == "NUMB"))
-                    {
-                        PegaProximo();
-                        return;
-                    }
-
-                    else
-                    {
-                        erro("Esperava numero ou coiden(?) obteve " + tokentype);                        
-                    }
+                    PegaProximo();
+                    return;
                 }
                 else
                 {
-                    erro("Esperava String, + ou - obteve "+tokentype);                    
-                }                   
+                    erro("Esperava numero ou coiden(?) obteve " + tokentype);                        
+                }
             }
-        }        
+            else
+            {
+                erro("Esperava String, + ou - obteve " + tokentype);                    
+            }
+        }
+
         private void sitype() 
         {//ok
             bool volta;
@@ -103,6 +113,7 @@ namespace PascalCompiler.Model
             }
 
         }
+
         private void type()
         {//ok
             
@@ -1044,7 +1055,7 @@ namespace PascalCompiler.Model
 
  
         }
-        private void progrm()
+        private void Program()
         {//ok
             
             if (tokentype == "program")
