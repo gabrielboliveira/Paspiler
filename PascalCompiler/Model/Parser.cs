@@ -238,6 +238,27 @@ namespace PascalCompiler.Model
                                 break;
                             }
                         case '<':
+                            {
+                                // verifica se tem um ">" ou "=" logo em seguida
+                                this.ParseToken(sb.ToString(), startIndex);
+                                sb.Clear();
+                                startIndex = position;
+                                if ((code.ElementAt(position + 1)) == '=')
+                                {
+                                    this.ParseToken(key + "=", startIndex);
+                                    position++;
+                                }
+                                else if ((code.ElementAt(position + 1)) == '>')
+                                {
+                                    this.ParseToken(key + ">", startIndex);
+                                    position++;
+                                }
+                                else
+                                {
+                                    this.ParseToken(key.ToString(), startIndex);
+                                }
+                                break;
+                            }
                         case '>':
                             {
                                 // verifica se tem um "=" logo em seguida
