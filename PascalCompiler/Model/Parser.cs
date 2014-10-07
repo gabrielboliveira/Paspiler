@@ -13,15 +13,15 @@ namespace PascalCompiler.Model
     /// </summary>
     class Parser
     {
+        private Sintatico sintatico = new Sintatico();
+
         private List<Token> allTokens = new List<Token>();
 
         internal List<Token> AllTokens
         {
             get { return allTokens; }
-            set { allTokens = value; }
+            private set { allTokens = value; }
         }
-
-        private int position = 0, startIndex = 0;
 
         private BindingList<Token> validTokens = new BindingList<Token>();
 
@@ -31,7 +31,7 @@ namespace PascalCompiler.Model
         internal BindingList<Token> ValidTokens
         {
             get { return validTokens; }
-            set { validTokens = value; }
+            private set { validTokens = value; }
         }
 
         private BindingList<Token> notValidTokens = new BindingList<Token>();
@@ -42,7 +42,15 @@ namespace PascalCompiler.Model
         internal BindingList<Token> NotValidTokens
         {
             get { return notValidTokens; }
-            set { notValidTokens = value; }
+            private set { notValidTokens = value; }
+        }
+
+        private BindingList<Token> errors;
+
+        internal BindingList<Token> Errors
+        {
+            get { return errors; }
+            private set { errors = value; }
         }
 
         public Parser() { }
@@ -52,6 +60,7 @@ namespace PascalCompiler.Model
         /// </summary>
         public void Clear()
         {
+            allTokens.Clear();
             validTokens.Clear();
             notValidTokens.Clear();
         }
@@ -60,12 +69,12 @@ namespace PascalCompiler.Model
         /// Recebe um token, envia para <see cref="Token"/> validar e caso seja válido, salva em <see cref="ValidTokens"/>
         /// </summary>
         /// <param name="strToken">Token a ser validado.</param>
-        private void ParseToken(string strToken, int startIndex)
+        private void ParseToken(string strToken, int startIndex, int line, int column)
         {
             if (strToken != "") 
             {
                 // Manda processar o token
-                Token token = Token.GetToken(strToken, startIndex);
+                Token token = Token.GetToken(strToken, startIndex, line, column - strToken.Length);
 
                 // Caso o token seja válido, adiciona a lista de tokens válidos e processados
                 if (token.TokenType != Token.TokenTypeEnum.NonExistant)
@@ -86,12 +95,14 @@ namespace PascalCompiler.Model
         public void Execute(string code)
         {
             this.RecognizeTokens(code);
+            this.sintatico.Iniciar(allTokens.ToList());
+
         }
 
         private void RecognizeTokens(string code)
         {
             // position guarda a posição que está dentro da string do programa (codeText)
-            int position = 0, startIndex = 0;
+            int position = 0, startIndex = 0, line = 1, column = 1;
 
             StringBuilder sb = new StringBuilder();
 
@@ -110,21 +121,28 @@ namespace PascalCompiler.Model
                 key = code.ElementAt(position);
                 if (key == apostrofo)
                 {
-                    this.ParseToken(sb.ToString(), startIndex);
+                    this.ParseToken(sb.ToString(), startIndex, line, column);
                     sb.Clear();
                     startIndex = position;
                     texto = "";
                     position++;
+                    column++;
                     while (code.ElementAt(position).ToString() != "'")
                     {
                         //vai concatenando em uma string tudo o que estiver entre os apóstrofos
                         texto += code.ElementAt(position);
+
+                        if (code.ElementAt(position) == '\n')
+                        {
+                            line++;
+                            column = 0;
+                        }
                         position++;
+                        column++;
                         if (position == code.Length)
                             break;
-
                     }
-                    this.ParseToken("'" + texto + "'", startIndex);
+                    this.ParseToken("'" + texto + "'", startIndex, line, column);
 
                 }
                 else
@@ -133,40 +151,48 @@ namespace PascalCompiler.Model
                     {
 
                         case ' ': // espaço
-
+                            {
+                                // se for espaço ou enter (\r), deve mandar verificar o token
+                                this.ParseToken(sb.ToString(), startIndex, line, column);
+                                sb.Clear();
+                                startIndex = position;
+                                break;
+                            }
                         case '\n': // enter (carriage return)
                             {
                                 // se for espaço ou enter (\r), deve mandar verificar o token
-                                this.ParseToken(sb.ToString(), startIndex);
+                                this.ParseToken(sb.ToString(), startIndex, line, column);
                                 sb.Clear();
                                 startIndex = position;
+                                line++;
+                                column = 1;
                                 break;
                             }
                         case ';':
                             {
                                 // Se for ponto-e-vírgula, deve-se adicionar o token armazenado e também o ";".
-                                this.ParseToken(sb.ToString(), startIndex);
+                                this.ParseToken(sb.ToString(), startIndex, line, column);
                                 sb.Clear();
                                 startIndex = position;
-                                this.ParseToken(";", startIndex);
+                                this.ParseToken(";", startIndex, line, column);
                                 break;
                             }
                         case ':':
                             {
                                 // se encontrar ":", verifica se o caractere em seguida é um "=", para
                                 // separar ":=" de somente ":"
-                                this.ParseToken(sb.ToString(), startIndex);
+                                this.ParseToken(sb.ToString(), startIndex, line, column);
                                 sb.Clear();
                                 startIndex = position;
                                 if ((code.ElementAt(position + 1)) == '=')
                                 {
-                                    this.ParseToken(":=", startIndex);
+                                    this.ParseToken(":=", startIndex, line, column);
                                     // pula a posição em seguida, pois já foi verificado
                                     position++;
                                 }
                                 else
                                 {
-                                    this.ParseToken(":", startIndex);
+                                    this.ParseToken(":", startIndex, line, column);
                                 }
                                 break;
                             }
@@ -174,7 +200,7 @@ namespace PascalCompiler.Model
                             {
                                 // se encontrar "(", verifica se o caractere em seguida é um "*", para
                                 // separar "(*" de somente "("
-                                this.ParseToken(sb.ToString(), startIndex);
+                                this.ParseToken(sb.ToString(), startIndex, line, column);
                                 sb.Clear();
                                 startIndex = position;
                                 if ((code.ElementAt(position + 1)) == '*')
@@ -183,10 +209,17 @@ namespace PascalCompiler.Model
                                     do
                                     {
                                         position++;
+                                        column++;
+                                        if (code.ElementAt(position) == '\n')
+                                        {
+                                            line++;
+                                            column = 1;
+                                        }
 
                                         if (code.ElementAt(position) == '*' && code.ElementAt(position + 1) == ')')
                                         {
                                             position++;
+                                            column++;
                                             break;
                                         }
 
@@ -194,7 +227,7 @@ namespace PascalCompiler.Model
                                 }
                                 else
                                 {
-                                    this.ParseToken("(", startIndex);
+                                    this.ParseToken("(", startIndex, line, column);
                                 }
                                 break;
                             }
@@ -202,17 +235,17 @@ namespace PascalCompiler.Model
                             {
                                 // se encontrar "*", verifica se o caractere em seguida é um ")", para
                                 // separar "*)" de somente "*"
-                                this.ParseToken(sb.ToString(), startIndex);
+                                this.ParseToken(sb.ToString(), startIndex, line, column);
                                 sb.Clear();
                                 startIndex = position;
                                 if ((code.ElementAt(position + 1)) == ')')
                                 {
-                                    this.ParseToken("*)", startIndex);
+                                    this.ParseToken("*)", startIndex, line, column);
                                     position++;
                                 }
                                 else
                                 {
-                                    this.ParseToken("*", startIndex);
+                                    this.ParseToken("*", startIndex, line, column);
                                 }
                                 break;
                             }
@@ -220,7 +253,7 @@ namespace PascalCompiler.Model
                             {
                                 // se encontrar "/", verifica se o caractere em seguida é uma outra "/", para
                                 // ignorar o comentário até o fim da linha
-                                this.ParseToken(sb.ToString(), startIndex);
+                                this.ParseToken(sb.ToString(), startIndex, line, column);
                                 sb.Clear();
                                 startIndex = position;
                                 if ((code.ElementAt(position + 1)) == '/')
@@ -233,46 +266,46 @@ namespace PascalCompiler.Model
                                 }
                                 else
                                 {
-                                    this.ParseToken("/", startIndex);
+                                    this.ParseToken("/", startIndex, line, column);
                                 }
                                 break;
                             }
                         case '<':
                             {
                                 // verifica se tem um ">" ou "=" logo em seguida
-                                this.ParseToken(sb.ToString(), startIndex);
+                                this.ParseToken(sb.ToString(), startIndex, line, column);
                                 sb.Clear();
                                 startIndex = position;
                                 if ((code.ElementAt(position + 1)) == '=')
                                 {
-                                    this.ParseToken(key + "=", startIndex);
+                                    this.ParseToken(key + "=", startIndex, line, column);
                                     position++;
                                 }
                                 else if ((code.ElementAt(position + 1)) == '>')
                                 {
-                                    this.ParseToken(key + ">", startIndex);
+                                    this.ParseToken(key + ">", startIndex, line, column);
                                     position++;
                                 }
                                 else
                                 {
-                                    this.ParseToken(key.ToString(), startIndex);
+                                    this.ParseToken(key.ToString(), startIndex, line, column);
                                 }
                                 break;
                             }
                         case '>':
                             {
                                 // verifica se tem um "=" logo em seguida
-                                this.ParseToken(sb.ToString(), startIndex);
+                                this.ParseToken(sb.ToString(), startIndex, line, column);
                                 sb.Clear();
                                 startIndex = position;
                                 if ((code.ElementAt(position + 1)) == '=')
                                 {
-                                    this.ParseToken(key + "=", startIndex);
+                                    this.ParseToken(key + "=", startIndex, line, column);
                                     position++;
                                 }
                                 else
                                 {
-                                    this.ParseToken(key.ToString(), startIndex);
+                                    this.ParseToken(key.ToString(), startIndex, line, column);
                                 }
                                 break;
                             }
@@ -290,10 +323,10 @@ namespace PascalCompiler.Model
                         case '@':
                         case '.':
                             {
-                                this.ParseToken(sb.ToString(), startIndex);
+                                this.ParseToken(sb.ToString(), startIndex, line, column);
                                 sb.Clear();
                                 startIndex = position;
-                                this.ParseToken(key.ToString(), startIndex);
+                                this.ParseToken(key.ToString(), startIndex, line, column);
                                 break;
                             }
                         //case '=':
@@ -320,7 +353,7 @@ namespace PascalCompiler.Model
                                     // trata fim de "arquivo"
                                     if (position == (code.Length - 1))
                                     {
-                                        this.ParseToken(sb.ToString(), startIndex);
+                                        this.ParseToken(sb.ToString(), startIndex, line, column);
                                         sb.Clear();
                                         startIndex = position;
                                     }
@@ -331,6 +364,7 @@ namespace PascalCompiler.Model
                     }
                 }
                 position++;
+                column++;
             } while (position < code.Length);
         }
     }

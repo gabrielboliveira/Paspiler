@@ -21,6 +21,8 @@ namespace PascalCompiler
 
         string initialDirectory = @"C:\";
 
+        bool debugMode = false, outputMode = false;
+
         public InitialForm()
         {
             InitializeComponent();
@@ -30,9 +32,11 @@ namespace PascalCompiler
 
             var validSource = new BindingSource(parser.ValidTokens, null);
             gridViewValidTokens.DataSource = validSource;
+            gridViewValidTokens.Visible = debugMode;
 
             var notValidSource = new BindingSource(parser.NotValidTokens, null);
             gridViewNotValidTokens.DataSource = notValidSource;
+            gridViewNotValidTokens.Visible = debugMode;
         }
 
         /// <summary>
@@ -64,6 +68,39 @@ namespace PascalCompiler
                             string[] filelines = File.ReadAllLines(filename);
 
                             _codeTextBox.Text = string.Join('\n'.ToString(), filelines);
+                        }
+                        return true;
+                    }
+                case (Keys.F9):
+                    {
+                        debugMode = !debugMode;
+                        gridViewValidTokens.Visible = debugMode;
+                        gridViewNotValidTokens.Visible = debugMode;
+                        int factor = (gridViewValidTokens.Width + gridViewNotValidTokens.Width + 12);
+                        if(debugMode)
+                        {
+                            _codeTextBox.Width -= factor;
+                            gridViewErrors.Width -= factor;
+                        }
+                        else
+                        {
+                            _codeTextBox.Width += factor;
+                            gridViewErrors.Width += factor;
+                        }
+                        return true;
+                    }
+                case (Keys.F8):
+                    {
+                        outputMode = !outputMode;
+                        gridViewErrors.Visible = outputMode;
+                        int factor = (gridViewErrors.Height + 6);
+                        if (outputMode)
+                        {
+                            _codeTextBox.Height -= factor;
+                        }
+                        else
+                        {
+                            _codeTextBox.Height += factor;
                         }
                         return true;
                     }

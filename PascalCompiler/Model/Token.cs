@@ -19,8 +19,10 @@ namespace PascalCompiler.Model
         /// Caso seja um objeto válido, <see cref="TokenType" /> guarda o valor.
         /// Caso não seja um objeto váido, <see cref="TokenType" /> é NonExistant.
         /// </summary>
-        private Token(string token, int startIndex)
+        private Token(string token, int startIndex, int line, int column)
         {
+            this.Line = line;
+            this.Column = column;
             this.StartIndex = startIndex;
             this.Value = token;
             // Verifica se é um número
@@ -41,7 +43,7 @@ namespace PascalCompiler.Model
                 }
                     
              }
-        }        
+        }
         
         private string value;
 
@@ -83,6 +85,22 @@ namespace PascalCompiler.Model
             set { startIndex = value; }
         }
 
+        private int line = 0;
+
+        public int Line
+        {
+            get { return line; }
+            set { line = value; }
+        }
+
+        private int column = 0;
+
+        public int Column
+        {
+            get { return column; }
+            set { column = value; }
+        }
+
 
         #region Dicionário
         /// <summary>
@@ -118,6 +136,8 @@ namespace PascalCompiler.Model
             { TokenTypeEnum.While, "while" },
             { TokenTypeEnum.Do, "do"},
             { TokenTypeEnum.For, "for"},
+            { TokenTypeEnum.To, "to"},
+            { TokenTypeEnum.DownTo, "downto"},
             { TokenTypeEnum.Repeat, "repeat"},
             { TokenTypeEnum.Until, "until"},
             { TokenTypeEnum.Procedure, "procedure"},
@@ -133,7 +153,6 @@ namespace PascalCompiler.Model
             { TokenTypeEnum.Mod, "mod"},
             { TokenTypeEnum.Multiplier, "*"},
             { TokenTypeEnum.Divisor, "/"},
-            { TokenTypeEnum.Equals, ":="},
             { TokenTypeEnum.Semicolon, ";"},
             { TokenTypeEnum.Colon, ":"},
             { TokenTypeEnum.Comma, ","},
@@ -206,7 +225,6 @@ namespace PascalCompiler.Model
             Mod,
             Multiplier,
             Divisor,
-            Equals,
             Semicolon,
             Colon,
             Comma,
@@ -232,7 +250,9 @@ namespace PascalCompiler.Model
             IntegerNumber,
 
             Identifier,
-            In
+            In,
+            To,
+            DownTo
         }
         #endregion
 
@@ -326,9 +346,9 @@ namespace PascalCompiler.Model
         /// </summary>
         /// <param name="token">Token a ser validado.</param>
         /// <returns>Retorna um novo objeto com o Token tratado.</returns>
-        public static Token GetToken(string token, int startIndex)
+        public static Token GetToken(string token, int startIndex, int line, int column)
         {
-            return new Token(token, startIndex);
+            return new Token(token, startIndex, line, column);
         }
     }
 }

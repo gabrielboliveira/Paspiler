@@ -1,25 +1,40 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace PascalCompiler.Model
 {
     class Sintatico
     {
-        string tokentype = "";
-
-        private int index = -1;
+        private int index;
 
         private Token tokenAtual = null;
 
         private List<Token> allTokens = null;
 
+        private BindingList<Error> errorList = null;
+
+        internal BindingList<Error> ErrorList
+        {
+            get { return errorList; }
+            set { errorList = value; }
+        }
+
         public void Iniciar(List<Token> tokens)
         {
+            this.index = -1;
             this.allTokens = tokens;
+            this.errorList = new BindingList<Error>();
             this.Program();
+        }
+
+        private void Erro(string message)
+        {
+            this.errorList.Add(new Error(message, this.tokenAtual));
         }
 
         //REGRAS DOS MÉTODOS: Antes de retornar de um método eu pego o próximo, logo, não se pega o próximo no começo de nenhum método
@@ -29,7 +44,7 @@ namespace PascalCompiler.Model
         private void PegaProximo()
         {
             index++;
-            if (allTokens.Count <= index)
+            if (index < allTokens.Count)
             {
                 tokenAtual = allTokens[index];
             }
@@ -39,9 +54,13 @@ namespace PascalCompiler.Model
             }
         }
 
-        private void erro(String erro)
+        private void PegaAnterior()
         {
-           //Ver a linha do erro e o motivo
+            if (index > 0)
+            {
+                index--;
+                tokenAtual = allTokens[index];
+            }
         }
 
         private void Constant()
@@ -72,79 +91,22 @@ namespace PascalCompiler.Model
                             }
                             else 
                             {
-                                // erro
+                                Erro("Esperado identificador válido ou número!");
                             }
                             break;
                         }
                     default:
                         {
-                            // erro
+                            Erro("Esperado texto, identificador válido, número, '+' ou '-'!");
                             break;
                         }
                 } // Switch
             }
             else 
             {
-                // erro
+                Erro("Esperado texto, identificador válido, número, '+' ou '-'!");
             }
-        }
-
-        private void sitype() 
-        {
-            bool volta;
-            if (tokentype == "TYIDEN")
-            {
-                PegaProximo();
-                return;
-            }
-            else
-            {
-                if (tokentype == "(")
-                {
-                    PegaProximo();
-                    volta = true;
-                    while (volta)
-                    {
-                        if (tokentype == "IDEN")
-                        {
-                            PegaProximo();
-                            if (tokentype == ")")
-                            {
-                                //so para garantir volta = false
-                                volta = false;
-                                PegaProximo();
-                                return;
-                            }                               
-                            else
-                            {
-                                if (tokentype == ",")
-                                    PegaProximo();
-                                else
-                                {
-                                    erro("Esperava ) ou , obteve " + tokentype);
-                                    volta = false;
-                                }                                    
-                            }
-                        } 
-                    }// fim while 
-                }
-                else
-                {
-                    PegaProximo();
-                    Constant();
-                    if (tokentype == "..")
-                    {
-                        PegaProximo();
-                        Constant();
-                        // so pego o proximo se antes de retornar se nao o termo anterior nao é função
-                        return;
-                    }
-                    else
-                        erro("Esperava .. obteve " + tokentype);
-                } 
-            }
-
-        }
+        } // Constant
 
         private void Type()
         {
@@ -153,6 +115,7 @@ namespace PascalCompiler.Model
             if(this.tokenAtual != null && 
                 (this.tokenAtual.TokenType == Token.TokenTypeEnum.Integer ||
                 this.tokenAtual.TokenType == Token.TokenTypeEnum.Boolean ||
+                this.tokenAtual.TokenType == Token.TokenTypeEnum.Real ||
                 this.tokenAtual.TokenType == Token.TokenTypeEnum.String ||
                 this.tokenAtual.TokenType == Token.TokenTypeEnum.Character))
             {
@@ -160,108 +123,10 @@ namespace PascalCompiler.Model
             }
             else
             {
-                // erro
+                Erro("Esperado 'integer', 'boolean', 'char', 'real' ou 'string'!");
             }
-        }
-        private void filist()
-        {
-            //O livro está com manchas.. não consegui ver o q eram alguns símbolos
-        }
-        private void casefilist()
-        {//como nao tem referências a esse metodo ainda nao conferi
-            bool volta = true;
-            while (volta)
-            {
-                if ((tokentype == "String") || (tokentype == "COIDEN") || (tokentype == "NUMB")||(tokentype == "+")||(tokentype == "-"))
-                {
-                    PegaProximo();
-                    if ((tokentype == "+") || (tokentype == "-"))
-                    {
-                        if ((tokentype != "COIDEN") && (tokentype != "NUMB"))
-                            erro("erro");
-                        else
-                            PegaProximo();
-                    }                                       
-                    if (tokentype == ",")
-                        PegaProximo();
-                    if (tokentype == ":")
-                    {
-                        PegaProximo();
-                        if (tokentype == "(")
-                        {
-                            PegaProximo();
-                            filist();
-                            PegaProximo();
-                            if (tokentype == ")")
-                            {
-                                if (tokentype == ";")
-                                    PegaProximo();
-                                else
-                                {
-                                    volta = false;
-                                    //Testar esse com outro if
-                                }
-                            }
+        } // Type
 
-                        }
-                    }
-                }
-               else
-                {
-                    if (tokentype == ";")
-                        PegaProximo();
-                    else
-                        volta = false;
-                        //testar esse com outro if
-                 }
-                        
-            }
-
-        }
-        private void infipo()
-        {
-            bool volta, voltainicio;
-            
-            voltainicio = true;
-            PegaProximo();
-            while (voltainicio)
-            {
-                if (tokentype == "[")
-                {
-                    volta = true;
-                    while (volta)
-                    {
-                        PegaProximo();
-                        Expression();
-                        if (tokentype == ",")
-                            PegaProximo();
-                        else
-                            if (tokentype == "]")
-                            {
-                                volta = false;
-                                PegaProximo();
-                            }
-                            else
-                            {
-                                volta = false;                                
-                                erro("Esperava ] obteve " + tokentype);
-                            }
-                    }                    
-                }
-                else
-                    if (tokentype == ".")
-                    {
-                        PegaProximo();
-                        if (tokentype == "FIIDEN")
-                            PegaProximo();
-                    }
-                    else
-                    {
-                        voltainicio = false;
-                        return;
-                    }
-            }           
-        }
         private void Factor()
         {
             this.PegaProximo();
@@ -284,7 +149,7 @@ namespace PascalCompiler.Model
                             if (this.tokenAtual != null &&
                                 this.tokenAtual.TokenType != Token.TokenTypeEnum.FinalParenthesis)
                             {
-                                // erro
+                                Erro("Esperado ')'!");
                             }
                             return;
                         }
@@ -295,16 +160,17 @@ namespace PascalCompiler.Model
                         }
                     default:
                         {
-                            // erro
+                            Erro("Esperado número, identificador válido, 'null', texto, 'not'!");
                             break;
                         }
                 }
             }
             else
             {
-                // erro
+                Erro("Esperado número, identificador válido, 'null', texto, 'not'!");
             }
-        }
+        } // Factor
+
         private void Term()
         {
             bool volta = true;
@@ -325,6 +191,7 @@ namespace PascalCompiler.Model
                                 break;
                             }
                         default:
+                            this.PegaAnterior();
                             return;
                     }
                 }
@@ -346,7 +213,7 @@ namespace PascalCompiler.Model
             }
             else
             {
-                // erro
+                this.PegaAnterior();
             }
             bool volta = true;
             do
@@ -364,6 +231,7 @@ namespace PascalCompiler.Model
                                 break;
                             }
                         default:
+                            this.PegaAnterior();
                             return;
                     }
                 }
@@ -394,6 +262,7 @@ namespace PascalCompiler.Model
                             return;
                         }
                     default:
+                        this.PegaAnterior();
                         return;
                 }
             }
@@ -401,74 +270,72 @@ namespace PascalCompiler.Model
             {
                 return;
             }
-               
         }
-        private void palist()
-        {//nao conferi pois nao tinha referencias
- 
-        }
+
         private void Block()
         {
-            bool volta, pega = true;
+            bool volta, valido = false;
             // Label não se utiliza mais, removi
             this.PegaProximo();
 
-            if (this.tokenAtual != null &&
-                this.tokenAtual.TokenType == Token.TokenTypeEnum.Const)
-            {
-                this.PegaProximo();
-                if (this.tokenAtual != null &&
-                    this.tokenAtual.TokenType == Token.TokenTypeEnum.Identifier)
-                {
-                    volta = true;
-                    pega = true;
-                    do
-                    {
-                        this.PegaProximo();
-                        if (this.tokenAtual != null &&
-                            this.tokenAtual.TokenType == Token.TokenTypeEnum.EqualsTo)
-                        {
-                            this.Constant();
-                            this.PegaProximo();
-                            if (this.tokenAtual != null &&
-                                this.tokenAtual.TokenType == Token.TokenTypeEnum.Semicolon)
-                            {
-                                this.PegaProximo();
-                                if (this.tokenAtual != null &&
-                                    this.tokenAtual.TokenType != Token.TokenTypeEnum.Identifier)
-                                {
-                                    volta = false;
-                                    pega = false; // evitar perder o valor anterior
-                                }
-                            }
-                            else
-                            {
-                                // erro
-                                volta = false;
-                            }
-                        }
-                        else
-                        {
-                            // erro
-                            volta = false;
-                        }
-                    } while (volta);
-                    
-                    if(pega)
-                        this.PegaProximo();
+            #region Comentado
+            /* if (this.tokenAtual != null &&
+            //    this.tokenAtual.TokenType == Token.TokenTypeEnum.Const)
+            //{
+            //    valido = true;
+            //    this.PegaProximo();
+            //    if (this.tokenAtual != null &&
+            //        this.tokenAtual.TokenType == Token.TokenTypeEnum.Identifier)
+            //    {
+            //        volta = true;
+            //        pega = true;
+            //        do
+            //        {
+            //            this.PegaProximo();
+            //            if (this.tokenAtual != null &&
+            //                this.tokenAtual.TokenType == Token.TokenTypeEnum.EqualsTo)
+            //            {
+            //                this.Constant();
+            //                this.PegaProximo();
+            //                if (this.tokenAtual != null &&
+            //                    this.tokenAtual.TokenType == Token.TokenTypeEnum.Semicolon)
+            //                {
+            //                    this.PegaProximo();
+            //                    if (this.tokenAtual != null &&
+            //                        this.tokenAtual.TokenType != Token.TokenTypeEnum.Identifier)
+            //                    {
+            //                        volta = false;
+            //                        this.PegaAnterior(); // evitar perder o valor anterior
+            //                    }
+            //                }
+            //                else
+            //                {
+            //                    Erro("Block");
+            //                    volta = false;
+            //                }
+            //            }
+            //            else
+            //            {
+            //                Erro("Block");
+            //                volta = false;
+            //            }
+            //        } while (volta);
 
-                }
-            } // Const
+            //        this.PegaProximo();
+
+            //    }
+            //} Const */
+            #endregion
 
             if (this.tokenAtual != null &&
                 this.tokenAtual.TokenType == Token.TokenTypeEnum.Var)
             {
+                valido = true;
                 this.PegaProximo();
                 if (this.tokenAtual != null &&
                     this.tokenAtual.TokenType == Token.TokenTypeEnum.Identifier)
                 {
                     volta = true;
-                    pega = true;
                     do
                     {
                         this.PegaProximo();
@@ -483,7 +350,7 @@ namespace PascalCompiler.Model
                                         if (this.tokenAtual != null &&
                                             this.tokenAtual.TokenType != Token.TokenTypeEnum.Identifier)
                                         {
-                                            // erro
+                                            Erro("Esperado um identificador válido!");
                                             volta = false; // evitar loop eterno
                                         }
                                         break;
@@ -500,20 +367,20 @@ namespace PascalCompiler.Model
                                                 this.tokenAtual.TokenType != Token.TokenTypeEnum.Identifier)
                                             {
                                                 volta = false; // evitar loop eterno
-                                                pega = false;  // evitar perder o valor anterior
+                                                this.PegaAnterior();  // evitar perder o valor anterior
                                             }
                                         }
                                         else
                                         {
                                             volta = false; // evitar loop eterno
-                                            // erro
+                                            Erro("Esperado ';'!");
                                         }
                                         break;
                                     }
                                 default:
                                     {
                                         volta = false;
-                                        // erro
+                                        Erro("Esperado ',' ou ':'!");
                                         break;
                                     }
                             }
@@ -521,44 +388,56 @@ namespace PascalCompiler.Model
                         else
                         {
                             volta = false;
-                            // erro
+                            Erro("Esperado ',' ou ':'!");
                         }
                     } while (volta);
 
-                    if(pega)
-                        this.PegaProximo();
+                    this.PegaProximo();
+                }
+                else
+                {
+                    Erro("Esperado identificador válido!");
                 }
             } // Var
 
             if (this.tokenAtual != null &&
                 this.tokenAtual.TokenType == Token.TokenTypeEnum.Begin)
             {
+                valido = true;
                 volta = true;
                 do
-                {
-                    this.Statement(); //----------------------------------------
+                { // loop eterno
+                    this.Statement();
                     this.PegaProximo();
                     if (this.tokenAtual != null)
                     {
                         if(this.tokenAtual.TokenType == Token.TokenTypeEnum.Semicolon)
-                        { 
-
-                        } //----------------------------------------
+                        {
+                            volta = true;
+                            continue;
+                        }
                         else if (this.tokenAtual.TokenType == Token.TokenTypeEnum.End)
                         {
                             return;
                         }
                         else
                         {
-                            // erro
+                            volta = false;
+                            Erro("Esperado ';' ou 'end'!");
                         }
                     }
                     else
                     {
-                        // erro
+                        volta = false;
+                        Erro("Esperado ';' ou 'end'!");
                     }
                 } while (volta);
             } // Begin
+
+            if(!valido)
+            {
+                Erro("Esperado 'var' ou 'begin'!");
+            }
         }
         private void Statement()
         {
@@ -578,7 +457,7 @@ namespace PascalCompiler.Model
                             }
                             else
                             {
-                                // erro
+                                Erro("Esperado ':='!");
                             }
                             return;
                         }
@@ -594,6 +473,7 @@ namespace PascalCompiler.Model
                                     if (this.tokenAtual.TokenType == Token.TokenTypeEnum.Semicolon)
                                     {
                                         // repete
+                                        volta = true;
                                         continue;
                                     }
                                     else if (this.tokenAtual.TokenType == Token.TokenTypeEnum.End)
@@ -602,13 +482,13 @@ namespace PascalCompiler.Model
                                     }
                                     else
                                     {
-                                        // erro
+                                        Erro("Esperado ';' ou 'end'!");
                                         return;
                                     }
                                 }
                                 else
                                 {
-                                    // erro
+                                    Erro("Esperado ';' ou 'end'!");
                                     return;
                                 }
                             } while (volta);
@@ -632,7 +512,7 @@ namespace PascalCompiler.Model
                             }
                             else
                             {
-                                // erro
+                                Erro("Esperado 'then'!");
                             }
                             return;
                         }
@@ -647,7 +527,7 @@ namespace PascalCompiler.Model
                             }
                             else
                             {
-                                // erro
+                                Erro("Esperado 'do'!");
                             }
                             return;
                         }
@@ -669,15 +549,67 @@ namespace PascalCompiler.Model
                                     this.Expression();
                                     return;
                                 }
+                                else
+                                {
+                                    Erro("Esperado ';' ou 'until'!");
+                                }
                             } while (volta);
                             return;
                         }
                     case Token.TokenTypeEnum.For:
                         {
-                            / --------------------
+                            this.PegaProximo();
+                            if (this.tokenAtual != null &&
+                                this.tokenAtual.TokenType == Token.TokenTypeEnum.Identifier) // Correto seria VAIDEN
+                            {
+                                this.PegaProximo();
+                                if (this.tokenAtual != null &&
+                                    this.tokenAtual.TokenType == Token.TokenTypeEnum.Attribution)
+                                {
+                                    this.Expression();
+                                    this.PegaProximo();
+                                    if (this.tokenAtual != null &&
+                                        (this.tokenAtual.TokenType == Token.TokenTypeEnum.To ||
+                                        this.tokenAtual.TokenType == Token.TokenTypeEnum.DownTo))
+                                    {
+                                        this.Expression();
+                                        this.PegaProximo();
+                                        if (this.tokenAtual != null &&
+                                            (this.tokenAtual.TokenType == Token.TokenTypeEnum.Do))
+                                        {
+                                            this.Statement();
+                                        }
+                                        else
+                                        {
+                                            Erro("Esperado 'do'!");
+                                        }
+                                    }
+                                    else
+                                    {
+                                        Erro("Esperado 'to' ou 'downto'!");
+                                    }
+                                }
+                                else
+                                {
+                                    Erro("Esperado ':='!");
+                                }
+                            }
+                            else
+                            {
+                                Erro("Esperado identificador válido!");
+                            }
+                            return;
+                        }
+                    default:
+                        {
+                            this.PegaAnterior();
                             return;
                         }
                 }
+            }
+            else
+            {
+                Erro("Fim de programa inesperado!");
             }
 
 
@@ -702,15 +634,19 @@ namespace PascalCompiler.Model
                     }
                     else
                     {
-                        // erro
+                        Erro("Esperado ';'!");
                     } // if Semicolon
                 }
                 else
                 {
-                    // erro
+                    Erro("Esperado identificador válido!");
                 } // if Identifier
 
             } // if Program
+            else
+            {
+                Erro("O programa deve começar com 'program'.");
+            }
         }
 
     }
