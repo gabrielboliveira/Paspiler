@@ -50,7 +50,8 @@
     <Compile Include="InitialForm.Designer.cs">
       <DependentUpon>InitialForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Model\Error.cs" />
+    <Compile Include="Model\Globals.cs" />
+    <Compile Include="Model\OutputMessage.cs" />
     <Compile Include="Model\Parser.cs" />
     <Compile Include="Model\Sintatico.cs" />
     <Compile Include="Model\Token.cs" />
@@ -80,6 +81,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Assets\paspiler-icon.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

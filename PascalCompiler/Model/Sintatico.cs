@@ -10,56 +10,104 @@ namespace PascalCompiler.Model
 {
     class Sintatico
     {
-        private int index;
+        private int _index;
 
-        private Token tokenAtual = null;
+        private int _erros = 0;
 
-        private List<Token> allTokens = null;
-
-        private BindingList<Error> errorList = null;
-
-        internal BindingList<Error> ErrorList
+        public int Erros
         {
-            get { return errorList; }
-            set { errorList = value; }
+            get { return _erros; }
+            set { _erros = value; }
         }
 
-        public void Iniciar(List<Token> tokens)
+        private Token _tokenAtual = null;
+
+        private List<Token> _allTokens = null;
+
+        private BackgroundWorker _worker;
+
+        private BindingList<OutputMessage> _outputList = null;
+
+        internal BindingList<OutputMessage> OutputList
         {
-            this.index = -1;
-            this.allTokens = tokens;
-            this.errorList = new BindingList<Error>();
+            get 
+            {
+                if (this._outputList == null)
+                {
+                    this._outputList = new BindingList<OutputMessage>();
+                }
+                    
+                return _outputList; 
+            }
+            set { _outputList = value; }
+        }
+
+        public void Preparar(List<Token> tokens)
+        {
+            this._erros = 0;
+
+            this._index = -1;
+
+            this._allTokens = tokens;
+
+            this._outputList.Clear();
+        }
+
+        public void Iniciar(BackgroundWorker worker)
+        {
+            UpdateOutput(new OutputMessage("Iniciando sintático...",
+                        OutputTypeEnum.Message, null));
+            this._worker = worker;
             this.Program();
+            this.PegaProximo();
+            if (this._tokenAtual != null)
+            {
+                Erro("Texto após 'end.'!");
+            }
+        }
+
+        public void UpdateOutput(OutputMessage message)
+        {
+            Globals.Execute((Action)(() => //Invoke at UI thread
+            { //run in UI thread
+                this._outputList.Add(message);
+            }), null);
         }
 
         private void Erro(string message)
         {
-            this.errorList.Add(new Error(message, this.tokenAtual));
+            _erros++;
+            UpdateOutput(new OutputMessage("Erro fatal: " + message + ".",
+                    OutputTypeEnum.Error, this._tokenAtual));
+
+            // Paro de executar
+            _worker.CancelAsync();
         }
 
         //REGRAS DOS MÉTODOS: Antes de retornar de um método eu pego o próximo, logo, não se pega o próximo no começo de nenhum método
         //Só nao pego o próximo no final do método se o último comando for outro método
 
-        // REGRA DOS MÉTODOS MODIFICADA: Somente chamo o PegaProximo quando for realmente utilizar...
+        // REGRA DOS MÉTODOS MODIFICADA: Somente chamo o PegaProximo quando for realmente utilizar. 
+        // Se eu não utilizar, devo chamar PegaAnterior para não perder o valor
         private void PegaProximo()
         {
-            index++;
-            if (index < allTokens.Count)
+            _index++;
+            if (_index < _allTokens.Count)
             {
-                tokenAtual = allTokens[index];
+                _tokenAtual = _allTokens[_index];
             }
             else
             {
-                tokenAtual = null;
+                _tokenAtual = null;
             }
         }
 
         private void PegaAnterior()
         {
-            if (index > 0)
+            if (_index > 0)
             {
-                index--;
-                tokenAtual = allTokens[index];
+                _index--;
+                _tokenAtual = _allTokens[_index];
             }
         }
 
@@ -67,9 +115,9 @@ namespace PascalCompiler.Model
         {
             this.PegaProximo();
 
-            if(this.tokenAtual != null)
+            if(this._tokenAtual != null)
             {
-                switch(this.tokenAtual.TokenType)
+                switch(this._tokenAtual.TokenType)
                 {
                     case Token.TokenTypeEnum.Text:
                     case Token.TokenTypeEnum.Identifier: // certo seria COIDEN
@@ -82,10 +130,10 @@ namespace PascalCompiler.Model
                     case Token.TokenTypeEnum.Sub:
                         {
                             this.PegaProximo();
-                            if(this.tokenAtual!= null &&
-                                (this.tokenAtual.TokenType == Token.TokenTypeEnum.Identifier ||
-                                this.tokenAtual.TokenType == Token.TokenTypeEnum.RealNumber ||
-                                this.tokenAtual.TokenType == Token.TokenTypeEnum.IntegerNumber))
+                            if(this._tokenAtual!= null &&
+                                (this._tokenAtual.TokenType == Token.TokenTypeEnum.Identifier ||
+                                this._tokenAtual.TokenType == Token.TokenTypeEnum.RealNumber ||
+                                this._tokenAtual.TokenType == Token.TokenTypeEnum.IntegerNumber))
                             {
                                 return;
                             }
@@ -112,12 +160,12 @@ namespace PascalCompiler.Model
         {
             this.PegaProximo();
             // não vou dar suporte a array e nem nada complicado... vamos deixar simples!
-            if(this.tokenAtual != null && 
-                (this.tokenAtual.TokenType == Token.TokenTypeEnum.Integer ||
-                this.tokenAtual.TokenType == Token.TokenTypeEnum.Boolean ||
-                this.tokenAtual.TokenType == Token.TokenTypeEnum.Real ||
-                this.tokenAtual.TokenType == Token.TokenTypeEnum.String ||
-                this.tokenAtual.TokenType == Token.TokenTypeEnum.Character))
+            if(this._tokenAtual != null && 
+                (this._tokenAtual.TokenType == Token.TokenTypeEnum.Integer ||
+                this._tokenAtual.TokenType == Token.TokenTypeEnum.Boolean ||
+                this._tokenAtual.TokenType == Token.TokenTypeEnum.Real ||
+                this._tokenAtual.TokenType == Token.TokenTypeEnum.String ||
+                this._tokenAtual.TokenType == Token.TokenTypeEnum.Character))
             {
                 return;
             }
@@ -130,9 +178,9 @@ namespace PascalCompiler.Model
         private void Factor()
         {
             this.PegaProximo();
-            if(this.tokenAtual != null)
+            if(this._tokenAtual != null)
             {
-                switch(this.tokenAtual.TokenType)
+                switch(this._tokenAtual.TokenType)
                 {
                     case Token.TokenTypeEnum.Identifier:
                     case Token.TokenTypeEnum.IntegerNumber:
@@ -146,8 +194,8 @@ namespace PascalCompiler.Model
                         {
                             this.Expression();
                             this.PegaProximo();
-                            if (this.tokenAtual != null &&
-                                this.tokenAtual.TokenType != Token.TokenTypeEnum.FinalParenthesis)
+                            if (this._tokenAtual != null &&
+                                this._tokenAtual.TokenType != Token.TokenTypeEnum.FinalParenthesis)
                             {
                                 Erro("Esperado ')'!");
                             }
@@ -178,9 +226,9 @@ namespace PascalCompiler.Model
             {
                 this.Factor();
                 this.PegaProximo();
-                if(this.tokenAtual != null)
+                if(this._tokenAtual != null)
                 {
-                    switch(this.tokenAtual.TokenType)
+                    switch(this._tokenAtual.TokenType)
                     {
                         case Token.TokenTypeEnum.Multiplier:
                         case Token.TokenTypeEnum.Divisor:
@@ -205,9 +253,9 @@ namespace PascalCompiler.Model
         private void SiExpression()
         {
             this.PegaProximo();
-            if(this.tokenAtual != null &&
-                (this.tokenAtual.TokenType == Token.TokenTypeEnum.Sub ||
-                this.tokenAtual.TokenType == Token.TokenTypeEnum.Sum))
+            if(this._tokenAtual != null &&
+                (this._tokenAtual.TokenType == Token.TokenTypeEnum.Sub ||
+                this._tokenAtual.TokenType == Token.TokenTypeEnum.Sum))
             {
                 // ok
             }
@@ -220,9 +268,9 @@ namespace PascalCompiler.Model
             {
                 this.Term();
                 this.PegaProximo();
-                if (this.tokenAtual != null)
+                if (this._tokenAtual != null)
                 {
-                    switch (this.tokenAtual.TokenType)
+                    switch (this._tokenAtual.TokenType)
                     {
                         case Token.TokenTypeEnum.Sum:
                         case Token.TokenTypeEnum.Sub:
@@ -246,9 +294,9 @@ namespace PascalCompiler.Model
         {
             this.SiExpression();
             this.PegaProximo();
-            if (this.tokenAtual != null)
+            if (this._tokenAtual != null)
             {
-                switch(this.tokenAtual.TokenType)
+                switch(this._tokenAtual.TokenType)
                 {
                     case Token.TokenTypeEnum.EqualsTo:
                     case Token.TokenTypeEnum.LessThan:
@@ -327,28 +375,28 @@ namespace PascalCompiler.Model
             //} Const */
             #endregion
 
-            if (this.tokenAtual != null &&
-                this.tokenAtual.TokenType == Token.TokenTypeEnum.Var)
+            if (this._tokenAtual != null &&
+                this._tokenAtual.TokenType == Token.TokenTypeEnum.Var)
             {
                 valido = true;
                 this.PegaProximo();
-                if (this.tokenAtual != null &&
-                    this.tokenAtual.TokenType == Token.TokenTypeEnum.Identifier)
+                if (this._tokenAtual != null &&
+                    this._tokenAtual.TokenType == Token.TokenTypeEnum.Identifier)
                 {
                     volta = true;
                     do
                     {
                         this.PegaProximo();
                         
-                        if (this.tokenAtual != null)
+                        if (this._tokenAtual != null)
                         {
-                            switch(this.tokenAtual.TokenType)
+                            switch(this._tokenAtual.TokenType)
                             {
                                 case Token.TokenTypeEnum.Comma:
                                     {
                                         this.PegaProximo();
-                                        if (this.tokenAtual != null &&
-                                            this.tokenAtual.TokenType != Token.TokenTypeEnum.Identifier)
+                                        if (this._tokenAtual != null &&
+                                            this._tokenAtual.TokenType != Token.TokenTypeEnum.Identifier)
                                         {
                                             Erro("Esperado um identificador válido!");
                                             volta = false; // evitar loop eterno
@@ -359,12 +407,12 @@ namespace PascalCompiler.Model
                                     {
                                         this.Type();
                                         this.PegaProximo();
-                                        if (this.tokenAtual != null &&
-                                            this.tokenAtual.TokenType == Token.TokenTypeEnum.Semicolon)
+                                        if (this._tokenAtual != null &&
+                                            this._tokenAtual.TokenType == Token.TokenTypeEnum.Semicolon)
                                         {
                                             this.PegaProximo();
-                                            if (this.tokenAtual != null &&
-                                                this.tokenAtual.TokenType != Token.TokenTypeEnum.Identifier)
+                                            if (this._tokenAtual != null &&
+                                                this._tokenAtual.TokenType != Token.TokenTypeEnum.Identifier)
                                             {
                                                 volta = false; // evitar loop eterno
                                                 this.PegaAnterior();  // evitar perder o valor anterior
@@ -400,8 +448,8 @@ namespace PascalCompiler.Model
                 }
             } // Var
 
-            if (this.tokenAtual != null &&
-                this.tokenAtual.TokenType == Token.TokenTypeEnum.Begin)
+            if (this._tokenAtual != null &&
+                this._tokenAtual.TokenType == Token.TokenTypeEnum.Begin)
             {
                 valido = true;
                 volta = true;
@@ -409,14 +457,14 @@ namespace PascalCompiler.Model
                 { // loop eterno
                     this.Statement();
                     this.PegaProximo();
-                    if (this.tokenAtual != null)
+                    if (this._tokenAtual != null)
                     {
-                        if(this.tokenAtual.TokenType == Token.TokenTypeEnum.Semicolon)
+                        if(this._tokenAtual.TokenType == Token.TokenTypeEnum.Semicolon)
                         {
                             volta = true;
                             continue;
                         }
-                        else if (this.tokenAtual.TokenType == Token.TokenTypeEnum.End)
+                        else if (this._tokenAtual.TokenType == Token.TokenTypeEnum.End)
                         {
                             return;
                         }
@@ -443,15 +491,15 @@ namespace PascalCompiler.Model
         {
             bool volta;
             this.PegaProximo();
-            if (this.tokenAtual != null)
+            if (this._tokenAtual != null)
             {
-                switch (this.tokenAtual.TokenType)
+                switch (this._tokenAtual.TokenType)
                 {
                     case Token.TokenTypeEnum.Identifier: // Correto seria VAIDEN
                         {
                             this.PegaProximo();
-                            if (this.tokenAtual != null &&
-                                this.tokenAtual.TokenType == Token.TokenTypeEnum.Attribution)
+                            if (this._tokenAtual != null &&
+                                this._tokenAtual.TokenType == Token.TokenTypeEnum.Attribution)
                             {
                                 this.Expression();
                             }
@@ -468,16 +516,17 @@ namespace PascalCompiler.Model
                             {
                                 this.Statement();
                                 this.PegaProximo();
-                                if (this.tokenAtual != null)
+                                if (this._tokenAtual != null)
                                 {
-                                    if (this.tokenAtual.TokenType == Token.TokenTypeEnum.Semicolon)
+                                    if (this._tokenAtual.TokenType == Token.TokenTypeEnum.Semicolon)
                                     {
                                         // repete
                                         volta = true;
                                         continue;
                                     }
-                                    else if (this.tokenAtual.TokenType == Token.TokenTypeEnum.End)
+                                    else if (this._tokenAtual.TokenType == Token.TokenTypeEnum.End)
                                     {
+                                        this.PegaAnterior();
                                         return;
                                     }
                                     else
@@ -498,13 +547,13 @@ namespace PascalCompiler.Model
                         {
                             this.Expression();
                             this.PegaProximo();
-                            if (this.tokenAtual != null && 
-                                this.tokenAtual.TokenType == Token.TokenTypeEnum.Then)
+                            if (this._tokenAtual != null && 
+                                this._tokenAtual.TokenType == Token.TokenTypeEnum.Then)
                             {
                                 this.Statement();
                                 this.PegaProximo();
-                                if (this.tokenAtual != null && 
-                                    this.tokenAtual.TokenType == Token.TokenTypeEnum.Else)
+                                if (this._tokenAtual != null && 
+                                    this._tokenAtual.TokenType == Token.TokenTypeEnum.Else)
                                 {
                                     this.Statement();
                                 }
@@ -520,8 +569,8 @@ namespace PascalCompiler.Model
                         {
                             this.Expression();
                             this.PegaProximo();
-                            if (this.tokenAtual != null &&
-                                this.tokenAtual.TokenType == Token.TokenTypeEnum.Do)
+                            if (this._tokenAtual != null &&
+                                this._tokenAtual.TokenType == Token.TokenTypeEnum.Do)
                             {
                                 this.Statement();
                             }
@@ -538,13 +587,13 @@ namespace PascalCompiler.Model
                             {
                                 this.Statement();
                                 this.PegaProximo();
-                                if (this.tokenAtual != null &&
-                                    this.tokenAtual.TokenType == Token.TokenTypeEnum.Semicolon)
+                                if (this._tokenAtual != null &&
+                                    this._tokenAtual.TokenType == Token.TokenTypeEnum.Semicolon)
                                 {
                                     continue;
                                 }
-                                else if (this.tokenAtual != null &&
-                                    this.tokenAtual.TokenType == Token.TokenTypeEnum.Until)
+                                else if (this._tokenAtual != null &&
+                                    this._tokenAtual.TokenType == Token.TokenTypeEnum.Until)
                                 {
                                     this.Expression();
                                     return;
@@ -559,23 +608,23 @@ namespace PascalCompiler.Model
                     case Token.TokenTypeEnum.For:
                         {
                             this.PegaProximo();
-                            if (this.tokenAtual != null &&
-                                this.tokenAtual.TokenType == Token.TokenTypeEnum.Identifier) // Correto seria VAIDEN
+                            if (this._tokenAtual != null &&
+                                this._tokenAtual.TokenType == Token.TokenTypeEnum.Identifier) // Correto seria VAIDEN
                             {
                                 this.PegaProximo();
-                                if (this.tokenAtual != null &&
-                                    this.tokenAtual.TokenType == Token.TokenTypeEnum.Attribution)
+                                if (this._tokenAtual != null &&
+                                    this._tokenAtual.TokenType == Token.TokenTypeEnum.Attribution)
                                 {
                                     this.Expression();
                                     this.PegaProximo();
-                                    if (this.tokenAtual != null &&
-                                        (this.tokenAtual.TokenType == Token.TokenTypeEnum.To ||
-                                        this.tokenAtual.TokenType == Token.TokenTypeEnum.DownTo))
+                                    if (this._tokenAtual != null &&
+                                        (this._tokenAtual.TokenType == Token.TokenTypeEnum.To ||
+                                        this._tokenAtual.TokenType == Token.TokenTypeEnum.DownTo))
                                     {
                                         this.Expression();
                                         this.PegaProximo();
-                                        if (this.tokenAtual != null &&
-                                            (this.tokenAtual.TokenType == Token.TokenTypeEnum.Do))
+                                        if (this._tokenAtual != null &&
+                                            (this._tokenAtual.TokenType == Token.TokenTypeEnum.Do))
                                         {
                                             this.Statement();
                                         }
@@ -617,18 +666,18 @@ namespace PascalCompiler.Model
         private void Program()
         {
             this.PegaProximo();
-            if (this.tokenAtual != null &&
-                this.tokenAtual.TokenType == Token.TokenTypeEnum.Program)
+            if (this._tokenAtual != null &&
+                this._tokenAtual.TokenType == Token.TokenTypeEnum.Program)
             {
                 this.PegaProximo();
-                if (this.tokenAtual != null &&
-                    this.tokenAtual.TokenType == Token.TokenTypeEnum.Identifier)
+                if (this._tokenAtual != null &&
+                    this._tokenAtual.TokenType == Token.TokenTypeEnum.Identifier)
                 {
                     this.PegaProximo();
 
                     // OBS: removido a parte do parênteses, pois não se utiliza mais
-                    if (this.tokenAtual != null &&
-                        this.tokenAtual.TokenType == Token.TokenTypeEnum.Semicolon)
+                    if (this._tokenAtual != null &&
+                        this._tokenAtual.TokenType == Token.TokenTypeEnum.Semicolon)
                     {
                         this.Block();
                     }

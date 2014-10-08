@@ -19,10 +19,8 @@ namespace PascalCompiler.Model
         /// Caso seja um objeto válido, <see cref="TokenType" /> guarda o valor.
         /// Caso não seja um objeto váido, <see cref="TokenType" /> é NonExistant.
         /// </summary>
-        private Token(string token, int startIndex, int line, int column)
+        private Token(string token, int startIndex)
         {
-            this.Line = line;
-            this.Column = column;
             this.StartIndex = startIndex;
             this.Value = token;
             // Verifica se é um número
@@ -84,23 +82,6 @@ namespace PascalCompiler.Model
             get { return startIndex; }
             set { startIndex = value; }
         }
-
-        private int line = 0;
-
-        public int Line
-        {
-            get { return line; }
-            set { line = value; }
-        }
-
-        private int column = 0;
-
-        public int Column
-        {
-            get { return column; }
-            set { column = value; }
-        }
-
 
         #region Dicionário
         /// <summary>
@@ -346,9 +327,9 @@ namespace PascalCompiler.Model
         /// </summary>
         /// <param name="token">Token a ser validado.</param>
         /// <returns>Retorna um novo objeto com o Token tratado.</returns>
-        public static Token GetToken(string token, int startIndex, int line, int column)
+        public static Token GetToken(string token, int startIndex)
         {
-            return new Token(token, startIndex, line, column);
+            return new Token(token, startIndex);
         }
     }
 }

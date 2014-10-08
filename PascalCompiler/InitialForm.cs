@@ -15,13 +15,11 @@ namespace PascalCompiler
 {
     public partial class InitialForm : Form
     {
-        StringBuilder sb = new StringBuilder();
+        Parser _parser = new Parser();
 
-        Parser parser = new Parser();
+        string _initialDirectory = @"C:\";
 
-        string initialDirectory = @"C:\";
-
-        bool debugMode = false, outputMode = false;
+        bool _debugMode = false, _outputMode = false;
 
         public InitialForm()
         {
@@ -30,13 +28,19 @@ namespace PascalCompiler
             // Teste Classe Token
             //Token tk = Token.GetToken("program");
 
-            var validSource = new BindingSource(parser.ValidTokens, null);
-            gridViewValidTokens.DataSource = validSource;
-            gridViewValidTokens.Visible = debugMode;
+            Globals.Execute = BeginInvoke;
 
-            var notValidSource = new BindingSource(parser.NotValidTokens, null);
+            var validSource = new BindingSource(_parser.ValidTokens, null);
+            gridViewValidTokens.DataSource = validSource;
+            gridViewValidTokens.Visible = _debugMode;
+
+            var notValidSource = new BindingSource(_parser.NotValidTokens, null);
             gridViewNotValidTokens.DataSource = notValidSource;
-            gridViewNotValidTokens.Visible = debugMode;
+            gridViewNotValidTokens.Visible = _debugMode;
+
+            var outputSource = new BindingSource(_parser.Output, null);
+            gridViewOutput.DataSource = outputSource;
+            gridViewOutput.Visible = _outputMode;
         }
 
         /// <summary>
@@ -50,7 +54,8 @@ namespace PascalCompiler
                 case (Keys.F5):
                     {
                         //ExecutaParser();
-                        parser.Execute(_codeTextBox.Text);
+                        _parser.Execute(_codeTextBox.Text);
+                        ChangeOutput(true);
                         return true;
                     }
                 case (Keys.F2):
@@ -58,12 +63,12 @@ namespace PascalCompiler
                         OpenFileDialog theDialog = new OpenFileDialog();
                         theDialog.Title = "Abrir código fonte Pascal";
                         theDialog.Filter = "Código Fonte Pascal|*.pas";
-                        theDialog.InitialDirectory = initialDirectory;
+                        theDialog.InitialDirectory = _initialDirectory;
                         if (theDialog.ShowDialog() == DialogResult.OK)
                         {
                             string filename = theDialog.FileName;
 
-                            initialDirectory = Path.GetDirectoryName(filename);
+                            _initialDirectory = Path.GetDirectoryName(filename);
 
                             string[] filelines = File.ReadAllLines(filename);
 
@@ -73,39 +78,51 @@ namespace PascalCompiler
                     }
                 case (Keys.F9):
                     {
-                        debugMode = !debugMode;
-                        gridViewValidTokens.Visible = debugMode;
-                        gridViewNotValidTokens.Visible = debugMode;
+                        _debugMode = !_debugMode;
+                        gridViewValidTokens.Visible = _debugMode;
+                        gridViewNotValidTokens.Visible = _debugMode;
                         int factor = (gridViewValidTokens.Width + gridViewNotValidTokens.Width + 12);
-                        if(debugMode)
+                        if(_debugMode)
                         {
                             _codeTextBox.Width -= factor;
-                            gridViewErrors.Width -= factor;
+                            gridViewOutput.Width -= factor;
                         }
                         else
                         {
                             _codeTextBox.Width += factor;
-                            gridViewErrors.Width += factor;
+                            gridViewOutput.Width += factor;
                         }
                         return true;
                     }
                 case (Keys.F8):
                     {
-                        outputMode = !outputMode;
-                        gridViewErrors.Visible = outputMode;
-                        int factor = (gridViewErrors.Height + 6);
-                        if (outputMode)
-                        {
-                            _codeTextBox.Height -= factor;
-                        }
-                        else
-                        {
-                            _codeTextBox.Height += factor;
-                        }
+                        ChangeOutput();
                         return true;
                     }
             }
             return base.ProcessCmdKey(ref msg, keyData);
+        }
+
+        private void ChangeOutput(bool reference)
+        {
+            if (reference == this._outputMode)
+                return;
+            _outputMode = !_outputMode;
+            gridViewOutput.Visible = _outputMode;
+            int factor = (gridViewOutput.Height + 6);
+            if (_outputMode)
+            {
+                _codeTextBox.Height -= factor;
+            }
+            else
+            {
+                _codeTextBox.Height += factor;
+            }
+        }
+
+        private void ChangeOutput()
+        {
+            this.ChangeOutput(!this._outputMode);
         }
         /*
         /// <summary>

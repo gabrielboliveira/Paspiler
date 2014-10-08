@@ -29,13 +29,14 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(InitialForm));
             this._codeTextBox = new System.Windows.Forms.RichTextBox();
             this.gridViewValidTokens = new System.Windows.Forms.DataGridView();
             this.gridViewNotValidTokens = new System.Windows.Forms.DataGridView();
-            this.gridViewErrors = new System.Windows.Forms.DataGridView();
+            this.gridViewOutput = new System.Windows.Forms.DataGridView();
             ((System.ComponentModel.ISupportInitialize)(this.gridViewValidTokens)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.gridViewNotValidTokens)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.gridViewErrors)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.gridViewOutput)).BeginInit();
             this.SuspendLayout();
             // 
             // _codeTextBox
@@ -50,8 +51,9 @@
             this._codeTextBox.Name = "_codeTextBox";
             this._codeTextBox.Size = new System.Drawing.Size(905, 544);
             this._codeTextBox.TabIndex = 1;
-            this._codeTextBox.Text = "program teste;\nvar oi:integer;\nbegin\n\toi := 1;\n\tif oi = 1 then\n\tbegin\n\t\toi := 2;\n" +
-    "\tend;\nend.";
+            this._codeTextBox.Text = "program teste;\nvar oi,i:integer;\nbegin\n\toi := 1;\n\tif oi = 1 then\n\tbegin\n\t\toi := 2" +
+    ";\n\tend;\n\trepeat\n\t\toi := oi + 1;\n\tuntil oi > 10;\n\tfor i := 1 to 10 do\n\tbegin\n\t\toi" +
+    " := i + oi;\n\tend;\nend.";
             // 
             // gridViewValidTokens
             // 
@@ -87,37 +89,40 @@
             this.gridViewNotValidTokens.TabIndex = 3;
             this.gridViewNotValidTokens.Visible = false;
             // 
-            // gridViewErrors
+            // gridViewOutput
             // 
-            this.gridViewErrors.AllowUserToAddRows = false;
-            this.gridViewErrors.AllowUserToDeleteRows = false;
-            this.gridViewErrors.AllowUserToOrderColumns = true;
-            this.gridViewErrors.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.gridViewOutput.AllowUserToAddRows = false;
+            this.gridViewOutput.AllowUserToDeleteRows = false;
+            this.gridViewOutput.AllowUserToOrderColumns = true;
+            this.gridViewOutput.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.gridViewErrors.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.gridViewErrors.Location = new System.Drawing.Point(12, 392);
-            this.gridViewErrors.Name = "gridViewErrors";
-            this.gridViewErrors.ReadOnly = true;
-            this.gridViewErrors.RowHeadersVisible = false;
-            this.gridViewErrors.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
-            this.gridViewErrors.Size = new System.Drawing.Size(905, 163);
-            this.gridViewErrors.TabIndex = 4;
-            this.gridViewErrors.Visible = false;
+            this.gridViewOutput.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.gridViewOutput.Location = new System.Drawing.Point(12, 392);
+            this.gridViewOutput.Name = "gridViewOutput";
+            this.gridViewOutput.ReadOnly = true;
+            this.gridViewOutput.RowHeadersVisible = false;
+            this.gridViewOutput.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
+            this.gridViewOutput.Size = new System.Drawing.Size(905, 163);
+            this.gridViewOutput.TabIndex = 4;
+            this.gridViewOutput.Visible = false;
             // 
             // InitialForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(929, 568);
-            this.Controls.Add(this.gridViewErrors);
+            this.Controls.Add(this.gridViewOutput);
             this.Controls.Add(this.gridViewNotValidTokens);
             this.Controls.Add(this.gridViewValidTokens);
             this.Controls.Add(this._codeTextBox);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.MinimumSize = new System.Drawing.Size(800, 600);
             this.Name = "InitialForm";
             this.Text = "Paspiler";
+            this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             ((System.ComponentModel.ISupportInitialize)(this.gridViewValidTokens)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.gridViewNotValidTokens)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.gridViewErrors)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.gridViewOutput)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -127,7 +132,7 @@
         private System.Windows.Forms.RichTextBox _codeTextBox;
         private System.Windows.Forms.DataGridView gridViewValidTokens;
         private System.Windows.Forms.DataGridView gridViewNotValidTokens;
-        private System.Windows.Forms.DataGridView gridViewErrors;
+        private System.Windows.Forms.DataGridView gridViewOutput;
 
     }
 }
