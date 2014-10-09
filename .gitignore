@@ -20,5 +20,5 @@ Thumbs.db
 *.log
 *.lib
 *.sbr
-Código Fonte/PascalCompiler/bin/
-Código Fonte/PascalCompiler/obj/
+"Código Fonte"/PascalCompiler/bin/
+"Código Fonte"/PascalCompiler/obj/
