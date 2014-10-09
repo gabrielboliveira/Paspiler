@@ -97,17 +97,17 @@ namespace PascalCompiler.Model
             { TokenTypeEnum.Begin,"begin" },
             { TokenTypeEnum.End,"end" },
             { TokenTypeEnum.Integer,"integer" },
-            { TokenTypeEnum.Boolean,"boolean" },
-            { TokenTypeEnum.String,"string" },
-            { TokenTypeEnum.Character,"character" },
-            { TokenTypeEnum.Real,"real" },
+            //{ TokenTypeEnum.Boolean,"boolean" },
+            //{ TokenTypeEnum.String,"string" },
+            //{ TokenTypeEnum.Character,"character" },
+            //{ TokenTypeEnum.Real,"real" },
             { TokenTypeEnum.Null,"null" },
             { TokenTypeEnum.In,"in" },
             { TokenTypeEnum.Of,"of" },
             { TokenTypeEnum.Case,"case" },
             { TokenTypeEnum.Goto, "goto" },
             { TokenTypeEnum.Label, "label" },
-            { TokenTypeEnum.Const, "const" },
+            //{ TokenTypeEnum.Const, "const" },
             { TokenTypeEnum.And, "and" },
             { TokenTypeEnum.Or, "or" },
             { TokenTypeEnum.Not, "not" },
@@ -170,12 +170,12 @@ namespace PascalCompiler.Model
             Var,
             Begin,
             End,
-            Const,
+            //Const,
             Integer,
-            Boolean,
+            /*Boolean,
             String,
             Real,
-            Character,
+            Character,*/
             Null,
             Text,
             Of,
@@ -227,7 +227,7 @@ namespace PascalCompiler.Model
             FinalComment,
             LineComment,
 
-            RealNumber,
+            //RealNumber,
             IntegerNumber,
 
             Identifier,
@@ -264,16 +264,16 @@ namespace PascalCompiler.Model
             TokenTypeEnum value = TokenTypeEnum.NonExistant;
 
             int aux;
-            float aux2;
+            // float aux2;
 
             if (int.TryParse(token, out aux))
             {
                 value = TokenTypeEnum.IntegerNumber;
             }
-            else if (float.TryParse(token, out aux2))
+            /*else if (float.TryParse(token, out aux2))
             {
                 value = TokenTypeEnum.RealNumber;
-            }
+            }*/
 
             return value;
         }
@@ -297,10 +297,7 @@ namespace PascalCompiler.Model
                     //MessageBox.Show(token);
                 }
             }
-            catch (Exception erro)
-            {
-                //MessageBox.Show("caractere inválido: " + erro);
-            }
+            catch { }
 
             return value;
         }
@@ -317,7 +314,7 @@ namespace PascalCompiler.Model
                     value = TokenTypeEnum.Text;
                 }
             }
-            catch (Exception e) { }
+            catch { }
             return value;
         }
 

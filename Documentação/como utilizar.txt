@@ -1,0 +1,32 @@
+;
+; PasPiler
+;
+; Compilador de Pascal desenvolvido para a disciplina de Compiladores
+; BCC - Unesp 2014
+; Prof. Marar
+;
+; Alunos: Amanda Dias e Gabriel Oliveira
+; 
+
+;
+; Como utilizar:
+;
+
+1) O programa necessita do .NET Framework instalado. Caso não tenha, execute o arquivo dotnetfx45_full_x86_x64.exe presente na pasta Documentação.
+
+	OBS: Somente Windows 7 para frente.
+
+2) O programa também necessita do FreePascal 2.6.4 (IMPORTANTE) instalado na pasta C:\FPC, de forma que o executável (fpc.exe) fique na pasta "C:\FPC\2.6.4\bin\i386-win32\". Caso necessite, o instalador está na pasta Documentação, arquivo fpc-2.6.4.i386-win32.exe.
+
+3) Execute o programa e seja feliz :)
+
+;
+; Atalhos:
+;
+
+F2: abrir arquivo
+F3: salvar arquivo
+F8: mostrar/esconder output
+F9: ligar/desligar debug mode.
+
+Seja feliz :)

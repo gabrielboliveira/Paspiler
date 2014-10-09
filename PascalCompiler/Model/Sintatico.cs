@@ -10,6 +10,8 @@ namespace PascalCompiler.Model
 {
     class Sintatico
     {
+        #region Variáveis
+
         private int _index;
 
         private int _erros = 0;
@@ -41,6 +43,7 @@ namespace PascalCompiler.Model
             }
             set { _outputList = value; }
         }
+        #endregion
 
         public void Preparar(List<Token> tokens)
         {
@@ -119,10 +122,10 @@ namespace PascalCompiler.Model
             {
                 switch(this._tokenAtual.TokenType)
                 {
-                    case Token.TokenTypeEnum.Text:
+                    //case Token.TokenTypeEnum.Text:
                     case Token.TokenTypeEnum.Identifier: // certo seria COIDEN
                     case Token.TokenTypeEnum.IntegerNumber:
-                    case Token.TokenTypeEnum.RealNumber:
+                    //case Token.TokenTypeEnum.RealNumber:
                         {
                             return;
                         }
@@ -132,7 +135,7 @@ namespace PascalCompiler.Model
                             this.PegaProximo();
                             if(this._tokenAtual!= null &&
                                 (this._tokenAtual.TokenType == Token.TokenTypeEnum.Identifier ||
-                                this._tokenAtual.TokenType == Token.TokenTypeEnum.RealNumber ||
+                                //this._tokenAtual.TokenType == Token.TokenTypeEnum.RealNumber ||
                                 this._tokenAtual.TokenType == Token.TokenTypeEnum.IntegerNumber))
                             {
                                 return;
@@ -161,11 +164,7 @@ namespace PascalCompiler.Model
             this.PegaProximo();
             // não vou dar suporte a array e nem nada complicado... vamos deixar simples!
             if(this._tokenAtual != null && 
-                (this._tokenAtual.TokenType == Token.TokenTypeEnum.Integer ||
-                this._tokenAtual.TokenType == Token.TokenTypeEnum.Boolean ||
-                this._tokenAtual.TokenType == Token.TokenTypeEnum.Real ||
-                this._tokenAtual.TokenType == Token.TokenTypeEnum.String ||
-                this._tokenAtual.TokenType == Token.TokenTypeEnum.Character))
+                (this._tokenAtual.TokenType == Token.TokenTypeEnum.Integer))
             {
                 return;
             }
@@ -184,9 +183,8 @@ namespace PascalCompiler.Model
                 {
                     case Token.TokenTypeEnum.Identifier:
                     case Token.TokenTypeEnum.IntegerNumber:
-                    case Token.TokenTypeEnum.RealNumber:
                     case Token.TokenTypeEnum.Null:
-                    case Token.TokenTypeEnum.Text:
+                    //case Token.TokenTypeEnum.Text:
                         {
                             return;
                         }
@@ -250,6 +248,7 @@ namespace PascalCompiler.Model
 
             } while (volta);
         }      
+        
         private void SiExpression()
         {
             this.PegaProximo();
@@ -290,6 +289,7 @@ namespace PascalCompiler.Model
             } while (volta);
 
         }
+        
         private void Expression()
         {
             this.SiExpression();
@@ -487,6 +487,7 @@ namespace PascalCompiler.Model
                 Erro("Esperado 'var' ou 'begin'!");
             }
         }
+        
         private void Statement()
         {
             bool volta;
@@ -526,7 +527,7 @@ namespace PascalCompiler.Model
                                     }
                                     else if (this._tokenAtual.TokenType == Token.TokenTypeEnum.End)
                                     {
-                                        this.PegaAnterior();
+                                        //this.PegaAnterior();
                                         return;
                                     }
                                     else
@@ -556,6 +557,10 @@ namespace PascalCompiler.Model
                                     this._tokenAtual.TokenType == Token.TokenTypeEnum.Else)
                                 {
                                     this.Statement();
+                                }
+                                else
+                                {
+                                    this.PegaAnterior();
                                 }
                                 return;
                             }
@@ -663,6 +668,7 @@ namespace PascalCompiler.Model
 
 
         }
+        
         private void Program()
         {
             this.PegaProximo();
@@ -680,6 +686,18 @@ namespace PascalCompiler.Model
                         this._tokenAtual.TokenType == Token.TokenTypeEnum.Semicolon)
                     {
                         this.Block();
+
+                        this.PegaProximo();
+
+                        if (this._tokenAtual != null &&
+                            this._tokenAtual.TokenType == Token.TokenTypeEnum.Point)
+                        {
+                            return;
+                        }
+                        else
+                        {
+                            Erro("Esperado '.'!");
+                        }
                     }
                     else
                     {

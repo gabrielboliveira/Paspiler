@@ -2,6 +2,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -17,9 +19,7 @@ namespace PascalCompiler.Model
     {
         private string _code = "";
 
-        private BackgroundWorker _worker, _wQueue;
-
-        private bool _repeatQueueWorker = true, _awaitQueue = true;
+        private BackgroundWorker _worker;
 
         private Sintatico _sintatico = new Sintatico();
 
@@ -170,6 +170,70 @@ namespace PascalCompiler.Model
         {
             this._sintatico.UpdateOutput(new OutputMessage("Finalizado sintático com " + this._sintatico.Erros.ToString() + " erros.",
                         OutputTypeEnum.Message, null));
+
+            if (this._sintatico.Erros == 0)
+            {
+                try
+                {
+                    System.IO.StreamWriter file = new System.IO.StreamWriter(Path.GetDirectoryName(Application.ExecutablePath) + "\\arquivo.pas");
+                    file.WriteLine(this._code);
+
+                    file.Close();
+
+                    // Application path and command line arguments
+                    string ApplicationPath = "C:\\FPC\\2.6.4\\bin\\i386-win32\\fpc.exe";
+                    string ApplicationArguments = Path.GetDirectoryName(Application.ExecutablePath) + "\\arquivo.pas -o" + Path.GetDirectoryName(Application.ExecutablePath) + "\\arquivo.exe";
+
+                    // Create a new process object
+                    Process ProcessObj = new Process();
+
+                    // StartInfo contains the startup information of
+                    // the new process
+                    ProcessObj.StartInfo.FileName = ApplicationPath;
+                    ProcessObj.StartInfo.Arguments = ApplicationArguments;
+
+                    // These two optional flags ensure that no DOS window
+                    // appears
+                    ProcessObj.StartInfo.UseShellExecute = false;
+                    ProcessObj.StartInfo.CreateNoWindow = true;
+
+                    // If this option is set the DOS window appears again :-/
+                    // ProcessObj.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+
+                    // This ensures that you get the output from the DOS application
+                    ProcessObj.StartInfo.RedirectStandardOutput = true;
+
+                    // Start the process
+                    ProcessObj.Start();
+
+                    // Wait that the process exits
+                    ProcessObj.WaitForExit();
+
+                    // Now read the output of the DOS application
+                    string Result = ProcessObj.StandardOutput.ReadToEnd();
+
+                    if (Result.ToUpper().Contains("error".ToUpper()))
+                    {
+                        this._sintatico.UpdateOutput(
+                        new OutputMessage("Compilado com ERRO!. " + Environment.NewLine + Result,
+                            OutputTypeEnum.Error, null));
+                    }
+                    else
+                    {
+                        this._sintatico.UpdateOutput(
+                            new OutputMessage("Compilado com sucesso. " + Environment.NewLine + Result,
+                                OutputTypeEnum.Message, null));
+
+                    }
+                } 
+                catch (Exception ex)
+                {
+                    this._sintatico.UpdateOutput(
+                        new OutputMessage("Compilado com ERRO!. " + Environment.NewLine + ex.Message,
+                            OutputTypeEnum.Error, null));
+                }
+
+            }
             UpdateTokensList();
         }
 

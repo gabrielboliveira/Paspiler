@@ -17,7 +17,7 @@ namespace PascalCompiler
     {
         Parser _parser = new Parser();
 
-        string _initialDirectory = @"C:\";
+        string _initialDirectory = Path.GetDirectoryName(Application.ExecutablePath);
 
         bool _debugMode = false, _outputMode = false;
 
@@ -60,19 +60,26 @@ namespace PascalCompiler
                     }
                 case (Keys.F2):
                     {
-                        OpenFileDialog theDialog = new OpenFileDialog();
-                        theDialog.Title = "Abrir código fonte Pascal";
-                        theDialog.Filter = "Código Fonte Pascal|*.pas";
-                        theDialog.InitialDirectory = _initialDirectory;
-                        if (theDialog.ShowDialog() == DialogResult.OK)
+                        try
                         {
-                            string filename = theDialog.FileName;
+                            OpenFileDialog theDialog = new OpenFileDialog();
+                            theDialog.Title = "Abrir código fonte Pascal";
+                            theDialog.Filter = "Código Fonte Pascal|*.pas";
+                            theDialog.InitialDirectory = _initialDirectory;
+                            if (theDialog.ShowDialog() == DialogResult.OK)
+                            {
+                                string filename = theDialog.FileName;
 
-                            _initialDirectory = Path.GetDirectoryName(filename);
+                                _initialDirectory = Path.GetDirectoryName(filename);
 
-                            string[] filelines = File.ReadAllLines(filename);
+                                string[] filelines = File.ReadAllLines(filename);
 
-                            _codeTextBox.Text = string.Join('\n'.ToString(), filelines);
+                                _codeTextBox.Text = string.Join('\n'.ToString(), filelines);
+                            }
+                        }
+                        catch (Exception ex) 
+                        {
+                            MessageBox.Show("Erro ao abrir arquivo! " + ex.Message);
                         }
                         return true;
                     }
@@ -97,6 +104,29 @@ namespace PascalCompiler
                 case (Keys.F8):
                     {
                         ChangeOutput();
+                        return true;
+                    }
+                case (Keys.F3):
+                    {
+                        try
+                        {
+                            SaveFileDialog theDialog = new SaveFileDialog();
+                            theDialog.Title = "Salvar código fonte Pascal";
+                            theDialog.Filter = "Código Fonte Pascal|*.pas";
+                            theDialog.InitialDirectory = _initialDirectory;
+                            theDialog.FileName = "fonte.pas";
+                            if (theDialog.ShowDialog() == DialogResult.OK)
+                            {
+                                System.IO.StreamWriter file = new System.IO.StreamWriter(theDialog.FileName);
+                                file.WriteLine(_codeTextBox.Text);
+
+                                file.Close();
+                            }
+                        }
+                        catch (Exception ex) 
+                        {
+                            MessageBox.Show("Erro ao salvar arquivo! " + ex.Message);
+                        }
                         return true;
                     }
             }

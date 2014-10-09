@@ -1,0 +1,33 @@
+;
+; PasPiler
+;
+; Compilador de Pascal desenvolvido para a disciplina de Compiladores
+; BCC - Unesp 2014
+; Prof. Marar
+;
+; Alunos: Amanda Dias e Gabriel Oliveira
+; 
+
+;
+; Material Utilizado:
+;
+
+Livro Valdemar W. Setzer - A Construção de um Compilador
+Notas de aula ministrada para BCC - Unesp - 1º semestre de 2014 pelo professor Fernando Marar
+Diversos sites da internet
+
+;
+; Links
+;
+
+http://stackoverflow.com/questions/15653921/get-current-folder-path
+http://msdn.microsoft.com/en-us/library/aa287548(v=vs.71).aspx
+http://www.jonasjohn.de/snippets/csharp/run-console-app-without-dos-box.htm
+http://www.freepascal.org/
+http://stackoverflow.com/questions/5136254/saving-file-using-savefiledialog
+http://stackoverflow.com/questions/13829980/argumentexception-in-producer-consumer-queue-in-c-sharp
+http://stackoverflow.com/questions/12751194/nicer-code-for-toggling-a-bool-member
+http://stackoverflow.com/questions/1636280/automatic-resizing-of-the-windows-forms-controls
+http://stackoverflow.com/questions/20398832/convert-generic-list-to-bindinglistt
+http://stackoverflow.com/questions/4732737/how-to-stop-backgroundworker-correctly
+http://stackoverflow.com/questions/3582038/run-command-line-program-silently-with-c-sharp-on-wince

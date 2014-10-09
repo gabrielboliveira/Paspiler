@@ -1,0 +1,8 @@
+D:\Documentos\Desenvolvimento\Projects\PascalCompiler\PascalCompiler\bin\x86\Release\PascalCompiler.exe.config
+D:\Documentos\Desenvolvimento\Projects\PascalCompiler\PascalCompiler\bin\x86\Release\PascalCompiler.exe
+D:\Documentos\Desenvolvimento\Projects\PascalCompiler\PascalCompiler\bin\x86\Release\PascalCompiler.pdb
+D:\Documentos\Desenvolvimento\Projects\PascalCompiler\PascalCompiler\obj\x86\Release\PascalCompiler.InitialForm.resources
+D:\Documentos\Desenvolvimento\Projects\PascalCompiler\PascalCompiler\obj\x86\Release\PascalCompiler.Properties.Resources.resources
+D:\Documentos\Desenvolvimento\Projects\PascalCompiler\PascalCompiler\obj\x86\Release\PascalCompiler.csproj.GenerateResource.Cache
+D:\Documentos\Desenvolvimento\Projects\PascalCompiler\PascalCompiler\obj\x86\Release\PascalCompiler.exe
+D:\Documentos\Desenvolvimento\Projects\PascalCompiler\PascalCompiler\obj\x86\Release\PascalCompiler.pdb
